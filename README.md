@@ -1,8 +1,8 @@
 # WhoFights - Web UI
 
-React + TypeScript frontend for [WhoFights](https://github.com/T3mon/fight-calendar-api). Fetches events from the API and plots them on a calendar, with checkboxes to filter by promotion.
+React + TypeScript frontend for [WhoFights](https://github.com/T3mon/whofights-api). Fetches events from the API and plots them on a calendar, with checkboxes to filter by promotion.
 
-See the [project wiki](https://github.com/T3mon/fight-calendar-api/wiki) for the full system architecture and new-contributor onboarding guide. This README covers only what's specific to this repo.
+See the [project wiki](https://github.com/T3mon/whofights-api/wiki) for the full system architecture and new-contributor onboarding guide. This README covers only what's specific to this repo.
 
 ## Tech stack
 
@@ -12,11 +12,11 @@ See the [project wiki](https://github.com/T3mon/fight-calendar-api/wiki) for the
 
 ## Local development
 
-Prerequisites: [Node.js](https://nodejs.org), and the [fight-calendar-api](https://github.com/T3mon/fight-calendar-api) running locally (see that repo's README).
+Prerequisites: [Node.js](https://nodejs.org), and the [whofights-api](https://github.com/T3mon/whofights-api) running locally (see that repo's README).
 
 ```bash
-git clone https://github.com/T3mon/fight-calendar-web-ui.git
-cd fight-calendar-web-ui
+git clone https://github.com/T3mon/whofights-web-ui.git
+cd whofights-web-ui
 npm install
 cp .env.example .env   # defaults to http://localhost:5080, the local API
 npm run dev
