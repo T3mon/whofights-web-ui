@@ -1,4 +1,4 @@
-// Mirrors WhoFights.Web's Models/Api DTOs (whofights-api repo).
+// Mirrors WhoFights.Api's Models/Api DTOs (whofights-api repo).
 
 export interface Promotion {
   id: number;

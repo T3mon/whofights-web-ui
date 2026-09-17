@@ -26,7 +26,7 @@ const NOTIFICATION_KEYS = ["new-events", "card-updates", "starting-soon"] as con
 //
 // Design/UX placeholder only - nothing here persists anywhere yet.
 // TODO: notifications/favorites/promotions need JWT-bearer auth wired into
-// WhoFights.Web plus endpoints extending UserFollow and a new
+// WhoFights.Api plus endpoints extending UserFollow and a new
 // favorite-fighters table before any of it saves.
 export default function AccountOverlay({ session, promotions, onSignOut }: AccountOverlayProps) {
   const { t } = useTranslation();
