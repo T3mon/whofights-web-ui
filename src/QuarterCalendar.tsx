@@ -36,7 +36,8 @@ export default function QuarterCalendar({ months, events }: QuarterCalendarProps
     pickedWeek && inRange(pickedWeek) ? pickedWeek : inRange(todayKey) ? weekStartKey(fromDayKey(todayKey)) : rangeStart;
 
   const weekDays = eachDayOfInterval({ start: fromDayKey(weekStart), end: endOfWeek(fromDayKey(weekStart)) });
-  const weekEvents = weekDays.flatMap((day) => eventsByDay.get(dayKey(day)) ?? []);
+  // Only what's still ahead - the list answers "what's on", not "what was".
+  const weekEvents = weekDays.filter((day) => dayKey(day) >= todayKey).flatMap((day) => eventsByDay.get(dayKey(day)) ?? []);
 
   const weekEnd = weekDays[weekDays.length - 1];
   const weekLabel = isSameMonth(weekDays[0], weekEnd)

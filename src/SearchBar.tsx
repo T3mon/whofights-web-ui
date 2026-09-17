@@ -5,6 +5,7 @@ import "./SearchBar.css";
 import { getDateLocale } from "./dateLocale";
 import { useTimezone, zonedDate } from "./timezone";
 import { colorForPromotion } from "./promotionColors";
+import { sortByStart, useUpcomingEvents } from "./calendarData";
 import type { EventListItem } from "./types";
 
 interface SearchBarProps {
@@ -58,14 +59,14 @@ export default function SearchBar({ events, onJumpToEvent }: SearchBarProps) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [open]);
 
+  // Search is for finding what's coming, so past cards don't compete for the
+  // handful of result slots.
+  const upcoming = useUpcomingEvents(events, timeZone);
   const results = useMemo(() => {
     const trimmed = query.trim().toLowerCase();
     if (!trimmed) return [];
-    return events
-      .filter((event) => matchesQuery(event, trimmed))
-      .sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime())
-      .slice(0, MAX_RESULTS);
-  }, [events, query]);
+    return sortByStart(upcoming.filter((event) => matchesQuery(event, trimmed))).slice(0, MAX_RESULTS);
+  }, [upcoming, query]);
 
   function close() {
     setQuery("");

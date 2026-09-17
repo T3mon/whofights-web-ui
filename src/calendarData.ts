@@ -46,6 +46,18 @@ export function sortByStart(events: EventListItem[]): EventListItem[] {
   return events.slice().sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime());
 }
 
+// "Already happened" is judged by day, not by the minute: a card that
+// started two hours ago is still on; one dated yesterday is history. Same
+// rule the grids use to dim past days.
+export function isUpcoming(event: EventListItem, todayKey: string, timeZone: string): boolean {
+  return dayKeyInZone(event.startsAt, timeZone) >= todayKey;
+}
+
+export function useUpcomingEvents(events: EventListItem[], timeZone: string): EventListItem[] {
+  const todayKey = dayKeyInZone(new Date(), timeZone);
+  return useMemo(() => events.filter((event) => isUpcoming(event, todayKey, timeZone)), [events, todayKey, timeZone]);
+}
+
 export function matchupLabel(event: EventListItem, versus: string): string {
   return event.mainEvent ? `${event.mainEvent.fighterA} ${versus} ${event.mainEvent.fighterB}` : event.title;
 }
