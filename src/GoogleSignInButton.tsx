@@ -57,7 +57,8 @@ function requestGoogleAccessToken(): Promise<string | null> {
     }
     const client = window.google.accounts.oauth2.initTokenClient({
       client_id: GOOGLE_CLIENT_ID,
-      scope: "openid email profile",
+      // Only what the auth service reads; "profile" would widen the consent prompt for nothing.
+      scope: "openid email",
       callback: (response) => {
         if (response.access_token) resolve(response.access_token);
         else reject(new Error(response.error ?? "Google sign-in failed"));
