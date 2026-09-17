@@ -71,6 +71,8 @@
   "auth": {
     "dialogTitle": "Вход в WhoFights",
     "or": "или",
+    "continueWithGoogle": "Продолжить с Google",
+    "signingIn": "Выполняется вход…",
     "close": "Закрыть",
     "signIn": "Войти",
     "register": "Регистрация",

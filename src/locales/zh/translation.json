@@ -71,6 +71,8 @@
   "auth": {
     "dialogTitle": "登录 WhoFights",
     "or": "或",
+    "continueWithGoogle": "通过 Google 继续",
+    "signingIn": "正在为您登录…",
     "close": "关闭",
     "signIn": "登录",
     "register": "注册",

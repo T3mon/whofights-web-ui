@@ -71,6 +71,8 @@
   "auth": {
     "dialogTitle": "Se connecter à WhoFights",
     "or": "ou",
+    "continueWithGoogle": "Continuer avec Google",
+    "signingIn": "Connexion en cours…",
     "close": "Fermer",
     "signIn": "Se connecter",
     "register": "S'inscrire",

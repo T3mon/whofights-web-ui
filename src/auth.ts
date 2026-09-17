@@ -52,16 +52,16 @@ async function extractErrorMessage(response: Response, fallback: string): Promis
   }
 }
 
-// Exchanges a Google ID token (from GoogleSignInButton) for our own session.
-export async function signInWithGoogle(idToken: string): Promise<Session> {
+// Exchanges the access token from Google's popup (see GoogleSignInButton) for our own session.
+export async function signInWithGoogle(accessToken: string): Promise<Session> {
   const response = await fetch(`${AUTH_BASE_URL}/auth/google`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ idToken }),
+    body: JSON.stringify({ accessToken }),
   });
 
   if (!response.ok) {
-    throw new Error(`Google sign-in failed: ${response.status}`);
+    throw new Error(await extractErrorMessage(response, "Google sign-in failed."));
   }
 
   const data = (await response.json()) as { token: string; expiresAt: string; email: string };

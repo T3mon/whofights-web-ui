@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import "./SignInButton.css";
 import GoogleSignInButton from "./GoogleSignInButton";
-import { login, register, resendConfirmation, type Session } from "./auth";
+import { login, register, resendConfirmation, signInWithGoogle, type Session } from "./auth";
 
 type Mode = "signin" | "register";
 type View = "form" | "check-email";
@@ -21,6 +21,7 @@ export default function SignInButton({ onSignedIn }: SignInButtonProps) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [googleBusy, setGoogleBusy] = useState(false);
   const [resendState, setResendState] = useState<"idle" | "sending" | "sent">("idle");
 
   function close() {
@@ -32,7 +33,24 @@ export default function SignInButton({ onSignedIn }: SignInButtonProps) {
     setConfirmPassword("");
     setError(null);
     setSubmitting(false);
+    setGoogleBusy(false);
     setResendState("idle");
+  }
+
+  // Google has already vouched for the person by the time this runs; the wait
+  // is our own auth service, which can take several seconds to wake up.
+  async function handleGoogleToken(accessToken: string) {
+    setError(null);
+    setGoogleBusy(true);
+    try {
+      const session = await signInWithGoogle(accessToken);
+      onSignedIn(session);
+      close();
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setGoogleBusy(false);
+    }
   }
 
   function switchMode(next: Mode) {
@@ -122,7 +140,13 @@ export default function SignInButton({ onSignedIn }: SignInButtonProps) {
               <>
                 <h2 className="sign-in-title">{t("auth.dialogTitle")}</h2>
 
-                <GoogleSignInButton onSignedIn={onSignedIn} />
+                <GoogleSignInButton onToken={handleGoogleToken} disabled={googleBusy || submitting} />
+                {googleBusy && (
+                  <p className="sign-in-status" role="status">
+                    <span className="sign-in-spinner" aria-hidden="true" />
+                    {t("auth.signingIn")}
+                  </p>
+                )}
                 <div className="sign-in-divider" aria-hidden="true">
                   <span>{t("auth.or")}</span>
                 </div>
@@ -132,6 +156,7 @@ export default function SignInButton({ onSignedIn }: SignInButtonProps) {
                     type="button"
                     className={"sign-in-tab" + (mode === "signin" ? " active" : "")}
                     onClick={() => switchMode("signin")}
+                    disabled={googleBusy}
                   >
                     {t("auth.signIn")}
                   </button>
@@ -139,6 +164,7 @@ export default function SignInButton({ onSignedIn }: SignInButtonProps) {
                     type="button"
                     className={"sign-in-tab" + (mode === "register" ? " active" : "")}
                     onClick={() => switchMode("register")}
+                    disabled={googleBusy}
                   >
                     {t("auth.register")}
                   </button>
@@ -156,6 +182,7 @@ export default function SignInButton({ onSignedIn }: SignInButtonProps) {
                       }}
                       required
                       autoComplete="email"
+                      disabled={googleBusy}
                     />
                   </label>
                   <label className="sign-in-field">
@@ -167,6 +194,7 @@ export default function SignInButton({ onSignedIn }: SignInButtonProps) {
                       required
                       minLength={mode === "register" ? 10 : undefined}
                       autoComplete={mode === "signin" ? "current-password" : "new-password"}
+                      disabled={googleBusy}
                     />
                   </label>
                   {mode === "register" && (
@@ -178,6 +206,7 @@ export default function SignInButton({ onSignedIn }: SignInButtonProps) {
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         required
                         autoComplete="new-password"
+                        disabled={googleBusy}
                       />
                     </label>
                   )}
@@ -189,7 +218,7 @@ export default function SignInButton({ onSignedIn }: SignInButtonProps) {
                     </button>
                   )}
 
-                  <button type="submit" className="sign-in-submit" disabled={submitting}>
+                  <button type="submit" className="sign-in-submit" disabled={submitting || googleBusy}>
                     {submitting ? t("app.loading") : mode === "signin" ? t("auth.submitSignIn") : t("auth.submitRegister")}
                   </button>
                 </form>
