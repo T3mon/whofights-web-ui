@@ -1,16 +1,17 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import "./EmailAuthButton.css";
+import "./SignInButton.css";
+import GoogleSignInButton from "./GoogleSignInButton";
 import { login, register, resendConfirmation, type Session } from "./auth";
 
 type Mode = "signin" | "register";
 type View = "form" | "check-email";
 
-interface EmailAuthButtonProps {
+interface SignInButtonProps {
   onSignedIn: (session: Session) => void;
 }
 
-export default function EmailAuthButton({ onSignedIn }: EmailAuthButtonProps) {
+export default function SignInButton({ onSignedIn }: SignInButtonProps) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState<Mode>("signin");
@@ -88,56 +89,63 @@ export default function EmailAuthButton({ onSignedIn }: EmailAuthButtonProps) {
   const canResend = email.trim().length > 0 && (mode === "signin" || error !== null);
 
   return (
-    <div className="email-auth">
-      <button type="button" className="email-auth-trigger" onClick={() => setOpen(true)} aria-label={t("auth.emailSignIn")}>
-        {t("auth.emailSignIn")}
+    <div className="sign-in">
+      <button type="button" className="sign-in-trigger" onClick={() => setOpen(true)}>
+        {t("auth.signIn")}
       </button>
 
       {open && (
-        <div className="email-auth-backdrop" onClick={close}>
+        <div className="sign-in-backdrop" onClick={close}>
           <div
-            className="email-auth-modal"
+            className="sign-in-modal"
             role="dialog"
-            aria-label={t("auth.emailSignIn")}
+            aria-label={t("auth.dialogTitle")}
             onClick={(e) => e.stopPropagation()}
           >
-            <button type="button" className="email-auth-close" onClick={close} aria-label={t("auth.close")}>
+            <button type="button" className="sign-in-close" onClick={close} aria-label={t("auth.close")}>
               &times;
             </button>
 
             {view === "check-email" ? (
-              <div className="email-auth-check">
-                <h2 className="email-auth-title">{t("auth.checkEmailTitle")}</h2>
-                <p className="email-auth-note">{t("auth.registerSuccess", { email })}</p>
+              <div className="sign-in-check">
+                <h2 className="sign-in-title">{t("auth.checkEmailTitle")}</h2>
+                <p className="sign-in-note">{t("auth.registerSuccess", { email })}</p>
                 {resendState === "sent" ? (
-                  <p className="email-auth-note">{t("auth.resendConfirmationSent")}</p>
+                  <p className="sign-in-note">{t("auth.resendConfirmationSent")}</p>
                 ) : (
-                  <button type="button" className="email-auth-link" onClick={handleResend} disabled={resendState === "sending"}>
+                  <button type="button" className="sign-in-link" onClick={handleResend} disabled={resendState === "sending"}>
                     {t("auth.resendConfirmation")}
                   </button>
                 )}
               </div>
             ) : (
               <>
-                <div className="email-auth-tabs">
+                <h2 className="sign-in-title">{t("auth.dialogTitle")}</h2>
+
+                <GoogleSignInButton onSignedIn={onSignedIn} />
+                <div className="sign-in-divider" aria-hidden="true">
+                  <span>{t("auth.or")}</span>
+                </div>
+
+                <div className="sign-in-tabs">
                   <button
                     type="button"
-                    className={"email-auth-tab" + (mode === "signin" ? " active" : "")}
+                    className={"sign-in-tab" + (mode === "signin" ? " active" : "")}
                     onClick={() => switchMode("signin")}
                   >
                     {t("auth.signIn")}
                   </button>
                   <button
                     type="button"
-                    className={"email-auth-tab" + (mode === "register" ? " active" : "")}
+                    className={"sign-in-tab" + (mode === "register" ? " active" : "")}
                     onClick={() => switchMode("register")}
                   >
                     {t("auth.register")}
                   </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="email-auth-form">
-                  <label className="email-auth-field">
+                <form onSubmit={handleSubmit} className="sign-in-form">
+                  <label className="sign-in-field">
                     <span>{t("auth.email")}</span>
                     <input
                       type="email"
@@ -150,7 +158,7 @@ export default function EmailAuthButton({ onSignedIn }: EmailAuthButtonProps) {
                       autoComplete="email"
                     />
                   </label>
-                  <label className="email-auth-field">
+                  <label className="sign-in-field">
                     <span>{t("auth.password")}</span>
                     <input
                       type="password"
@@ -162,7 +170,7 @@ export default function EmailAuthButton({ onSignedIn }: EmailAuthButtonProps) {
                     />
                   </label>
                   {mode === "register" && (
-                    <label className="email-auth-field">
+                    <label className="sign-in-field">
                       <span>{t("auth.confirmPassword")}</span>
                       <input
                         type="password"
@@ -174,14 +182,14 @@ export default function EmailAuthButton({ onSignedIn }: EmailAuthButtonProps) {
                     </label>
                   )}
 
-                  {error && <p className="email-auth-error">{error}</p>}
+                  {error && <p className="sign-in-error">{error}</p>}
                   {canResend && (
-                    <button type="button" className="email-auth-link" onClick={handleResend} disabled={resendState !== "idle"}>
+                    <button type="button" className="sign-in-link" onClick={handleResend} disabled={resendState !== "idle"}>
                       {resendState === "sent" ? t("auth.resendConfirmationSent") : t("auth.resendConfirmation")}
                     </button>
                   )}
 
-                  <button type="submit" className="email-auth-submit" disabled={submitting}>
+                  <button type="submit" className="sign-in-submit" disabled={submitting}>
                     {submitting ? t("app.loading") : mode === "signin" ? t("auth.submitSignIn") : t("auth.submitRegister")}
                   </button>
                 </form>

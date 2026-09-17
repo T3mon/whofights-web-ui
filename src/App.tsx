@@ -9,8 +9,7 @@ import { fetchEvents, fetchPromotions } from "./api";
 import YearCalendar from "./YearCalendar";
 import HeatmapCalendar from "./HeatmapCalendar";
 import PromotionSidebar from "./PromotionSidebar";
-import GoogleSignInButton from "./GoogleSignInButton";
-import EmailAuthButton from "./EmailAuthButton";
+import SignInButton from "./SignInButton";
 import AccountOverlay from "./AccountOverlay";
 import SiteSettingsButton from "./SiteSettingsButton";
 import SearchBar from "./SearchBar";
@@ -203,10 +202,7 @@ function App() {
               }}
             />
           ) : (
-            <div className="d-flex align-items-center gap-2">
-              <GoogleSignInButton onSignedIn={setSession} />
-              <EmailAuthButton onSignedIn={setSession} />
-            </div>
+            <SignInButton onSignedIn={setSession} />
           )}
         </div>
       </header>

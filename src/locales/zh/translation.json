@@ -69,8 +69,8 @@
     "failedToLoadEvents": "赛事加载失败：{{message}}"
   },
   "auth": {
-    "signInNotConfigured": "登录未配置",
-    "emailSignIn": "登录",
+    "dialogTitle": "登录 WhoFights",
+    "or": "或",
     "close": "关闭",
     "signIn": "登录",
     "register": "注册",

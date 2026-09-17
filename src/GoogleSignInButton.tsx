@@ -1,5 +1,4 @@
 import { useEffect, useRef } from "react";
-import { useTranslation } from "react-i18next";
 import { signInWithGoogle, type Session } from "./auth";
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -11,7 +10,10 @@ declare global {
       accounts: {
         id: {
           initialize: (config: { client_id: string; callback: (response: { credential: string }) => void }) => void;
-          renderButton: (parent: HTMLElement, options: { theme: string; size: string }) => void;
+          renderButton: (
+            parent: HTMLElement,
+            options: { theme: string; size: string; shape?: string; text?: string; width?: number },
+          ) => void;
         };
       };
     };
@@ -43,17 +45,24 @@ interface GoogleSignInButtonProps {
   onSignedIn: (session: Session) => void;
 }
 
+// Google only permits its own rendered button for "Sign in with Google", so
+// the look is chosen from its options rather than styled by us: the dark
+// filled theme sits on our surfaces without the white-slab effect, and the
+// pill shape matches the dialog's controls.
 export default function GoogleSignInButton({ onSignedIn }: GoogleSignInButtonProps) {
-  const { t } = useTranslation();
   const buttonRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!GOOGLE_CLIENT_ID) return;
+    if (!GOOGLE_CLIENT_ID) {
+      console.warn("VITE_GOOGLE_CLIENT_ID is not set - Google sign-in is hidden.");
+      return;
+    }
     let cancelled = false;
 
     loadGoogleScript()
       .then(() => {
-        if (cancelled || !window.google || !buttonRef.current) return;
+        const container = buttonRef.current;
+        if (cancelled || !window.google || !container) return;
 
         window.google.accounts.id.initialize({
           client_id: GOOGLE_CLIENT_ID,
@@ -61,7 +70,15 @@ export default function GoogleSignInButton({ onSignedIn }: GoogleSignInButtonPro
             signInWithGoogle(response.credential).then(onSignedIn).catch(console.error);
           },
         });
-        window.google.accounts.id.renderButton(buttonRef.current, { theme: "outline", size: "medium" });
+        // Google clamps width to 200-400px; fill the dialog within that.
+        const width = Math.min(400, Math.max(200, Math.round(container.clientWidth)));
+        window.google.accounts.id.renderButton(container, {
+          theme: "filled_black",
+          size: "large",
+          shape: "pill",
+          text: "continue_with",
+          width,
+        });
       })
       .catch(console.error);
 
@@ -70,13 +87,7 @@ export default function GoogleSignInButton({ onSignedIn }: GoogleSignInButtonPro
     };
   }, [onSignedIn]);
 
-  if (!GOOGLE_CLIENT_ID) {
-    return (
-      <span className="text-muted small" title="Set VITE_GOOGLE_CLIENT_ID to enable sign-in">
-        {t("auth.signInNotConfigured")}
-      </span>
-    );
-  }
+  if (!GOOGLE_CLIENT_ID) return null;
 
-  return <div ref={buttonRef} />;
+  return <div ref={buttonRef} className="google-sign-in" />;
 }

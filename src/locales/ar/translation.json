@@ -69,8 +69,8 @@
     "failedToLoadEvents": "فشل تحميل الفعاليات: {{message}}"
   },
   "auth": {
-    "signInNotConfigured": "تسجيل الدخول غير مُهيأ",
-    "emailSignIn": "تسجيل الدخول",
+    "dialogTitle": "تسجيل الدخول إلى WhoFights",
+    "or": "أو",
     "close": "إغلاق",
     "signIn": "تسجيل الدخول",
     "register": "إنشاء حساب",

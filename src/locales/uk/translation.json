@@ -69,8 +69,8 @@
     "failedToLoadEvents": "Не вдалося завантажити події: {{message}}"
   },
   "auth": {
-    "signInNotConfigured": "Вхід не налаштовано",
-    "emailSignIn": "Увійти",
+    "dialogTitle": "Вхід у WhoFights",
+    "or": "або",
     "close": "Закрити",
     "signIn": "Увійти",
     "register": "Реєстрація",

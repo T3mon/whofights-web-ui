@@ -69,8 +69,8 @@
     "failedToLoadEvents": "Falha ao carregar eventos: {{message}}"
   },
   "auth": {
-    "signInNotConfigured": "Login não configurado",
-    "emailSignIn": "Entrar",
+    "dialogTitle": "Entrar no WhoFights",
+    "or": "ou",
     "close": "Fechar",
     "signIn": "Entrar",
     "register": "Registrar",

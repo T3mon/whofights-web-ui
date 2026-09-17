@@ -67,9 +67,14 @@ export default function AccountOverlay({ session, promotions, onSignOut }: Accou
 
   return (
     <>
-      <button type="button" className="account-overlay-trigger" onClick={() => setOpen(true)}>
+      <button
+        type="button"
+        className="account-overlay-trigger"
+        onClick={() => setOpen(true)}
+        aria-label={t("account.ariaLabel")}
+        title={session.email}
+      >
         <span className="account-overlay-avatar">{initial}</span>
-        <span className="account-overlay-trigger-email">{session.email}</span>
       </button>
 
       {open && (

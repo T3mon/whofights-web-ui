@@ -41,6 +41,11 @@
   --brand-who: #e63946;
   --brand-fights: #e6c200;
 
+  /* Logo purple - account/sign-in affordances, so they read as "you" rather
+     than as one more UI control in the accent color. */
+  --brand: #863bff;
+  --brand-hover: #7430e6;
+
   /* Shadows / overlays */
   --shadow-sm: rgba(0, 0, 0, 0.45);
   --shadow-md: rgba(0, 0, 0, 0.5);
@@ -83,6 +88,9 @@
 
   --brand-who: #b8412e;
   --brand-fights: #8a6d1f;
+
+  --brand: #6f2fd6;
+  --brand-hover: #5f27bd;
 
   --shadow-sm: rgba(60, 50, 30, 0.08);
   --shadow-md: rgba(60, 50, 30, 0.12);

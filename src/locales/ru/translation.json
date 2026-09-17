@@ -69,8 +69,8 @@
     "failedToLoadEvents": "Не удалось загрузить события: {{message}}"
   },
   "auth": {
-    "signInNotConfigured": "Вход не настроен",
-    "emailSignIn": "Войти",
+    "dialogTitle": "Вход в WhoFights",
+    "or": "или",
     "close": "Закрыть",
     "signIn": "Войти",
     "register": "Регистрация",

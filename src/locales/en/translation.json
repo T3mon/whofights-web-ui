@@ -69,8 +69,8 @@
     "failedToLoadEvents": "Failed to load events: {{message}}"
   },
   "auth": {
-    "signInNotConfigured": "Sign-in not configured",
-    "emailSignIn": "Sign in",
+    "dialogTitle": "Sign in to WhoFights",
+    "or": "or",
     "close": "Close",
     "signIn": "Sign in",
     "register": "Register",
