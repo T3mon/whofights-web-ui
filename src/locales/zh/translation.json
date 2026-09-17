@@ -62,7 +62,10 @@
     "noFightCardYet": "赛事卡详情暂不可用。",
     "mainEvent": "主赛事",
     "bout": "第 {{number}} 场",
-    "moreCount": "还有 {{count}} 场"
+    "moreCount": "还有 {{count}} 场",
+    "previousWeek": "上一周",
+    "nextWeek": "下一周",
+    "noEventsThisWeek": "本周没有赛事。"
   },
   "app": {
     "loading": "加载中…",

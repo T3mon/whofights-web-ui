@@ -62,7 +62,10 @@
     "noFightCardYet": "Деталі карти боїв поки недоступні.",
     "mainEvent": "Головний бій",
     "bout": "Бій {{number}}",
-    "moreCount": "ще +{{count}}"
+    "moreCount": "ще +{{count}}",
+    "previousWeek": "Попередній тиждень",
+    "nextWeek": "Наступний тиждень",
+    "noEventsThisWeek": "Цього тижня подій немає."
   },
   "app": {
     "loading": "Завантаження…",

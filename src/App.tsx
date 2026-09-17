@@ -5,9 +5,11 @@ import { useTranslation } from "react-i18next";
 import "./App.css";
 import "./YearCalendar.css";
 import "./HeatmapCalendar.css";
+import "./QuarterCalendar.css";
 import { fetchEvents, fetchPromotions } from "./api";
 import YearCalendar from "./YearCalendar";
 import HeatmapCalendar from "./HeatmapCalendar";
+import QuarterCalendar from "./QuarterCalendar";
 import PromotionSidebar from "./PromotionSidebar";
 import SignInButton from "./SignInButton";
 import AccountOverlay from "./AccountOverlay";
@@ -235,6 +237,8 @@ function App() {
                 selectedDay={selectedDay}
                 onSelectDay={setSelectedDay}
               />
+            ) : viewMode === "quarter" ? (
+              <QuarterCalendar months={monthsInView(viewMode, viewDate)} events={visibleEvents} />
             ) : (
               <HeatmapCalendar
                 months={monthsInView(viewMode, viewDate)}

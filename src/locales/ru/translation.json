@@ -62,7 +62,10 @@
     "noFightCardYet": "Детали карты боёв пока недоступны.",
     "mainEvent": "Главный бой",
     "bout": "Бой {{number}}",
-    "moreCount": "ещё +{{count}}"
+    "moreCount": "ещё +{{count}}",
+    "previousWeek": "Предыдущая неделя",
+    "nextWeek": "Следующая неделя",
+    "noEventsThisWeek": "На этой неделе событий нет."
   },
   "app": {
     "loading": "Загрузка…",

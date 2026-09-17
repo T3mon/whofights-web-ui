@@ -62,7 +62,10 @@
     "noFightCardYet": "No fight card details available yet.",
     "mainEvent": "Main Event",
     "bout": "Bout {{number}}",
-    "moreCount": "+{{count}} more"
+    "moreCount": "+{{count}} more",
+    "previousWeek": "Previous week",
+    "nextWeek": "Next week",
+    "noEventsThisWeek": "No events this week."
   },
   "app": {
     "loading": "Loading…",

@@ -62,7 +62,10 @@
     "noFightCardYet": "Aucun détail de carte de combat disponible pour le moment.",
     "mainEvent": "Événement principal",
     "bout": "Combat {{number}}",
-    "moreCount": "+{{count}} de plus"
+    "moreCount": "+{{count}} de plus",
+    "previousWeek": "Semaine précédente",
+    "nextWeek": "Semaine suivante",
+    "noEventsThisWeek": "Aucun événement cette semaine."
   },
   "app": {
     "loading": "Chargement…",

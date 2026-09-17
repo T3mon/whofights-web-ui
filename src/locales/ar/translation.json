@@ -62,7 +62,10 @@
     "noFightCardYet": "تفاصيل بطاقة المواجهات غير متوفرة بعد.",
     "mainEvent": "المواجهة الرئيسية",
     "bout": "المواجهة {{number}}",
-    "moreCount": "+{{count}} المزيد"
+    "moreCount": "+{{count}} المزيد",
+    "previousWeek": "الأسبوع السابق",
+    "nextWeek": "الأسبوع التالي",
+    "noEventsThisWeek": "لا توجد فعاليات هذا الأسبوع."
   },
   "app": {
     "loading": "جارٍ التحميل…",

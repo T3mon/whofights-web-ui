@@ -62,7 +62,10 @@
     "noFightCardYet": "Detalhes do card ainda não disponíveis.",
     "mainEvent": "Luta principal",
     "bout": "Luta {{number}}",
-    "moreCount": "+{{count}} mais"
+    "moreCount": "+{{count}} mais",
+    "previousWeek": "Semana anterior",
+    "nextWeek": "Próxima semana",
+    "noEventsThisWeek": "Nenhum evento nesta semana."
   },
   "app": {
     "loading": "Carregando…",
