@@ -1,18 +1,11 @@
 import { useMemo } from "react";
-import {
-  eachDayOfInterval,
-  endOfMonth,
-  endOfWeek,
-  format,
-  isSameMonth,
-  startOfMonth,
-  startOfWeek,
-} from "date-fns";
+import { format, isSameMonth } from "date-fns";
 import { useTranslation } from "react-i18next";
 import type { EventListItem } from "./types";
 import { colorForPromotion } from "./promotionColors";
 import { getDateLocale, getWeekdayLabels } from "./dateLocale";
 import { dayKeyInZone, useTimezone, zonedDate } from "./timezone";
+import { dayKey, getMonthGridDays, useEventsByDay } from "./calendarData";
 import FightCardExpander from "./FightCardExpander";
 
 const MAX_DOTS_PER_DAY = 4;
@@ -22,16 +15,6 @@ interface YearCalendarProps {
   events: EventListItem[];
   selectedDay: string | null;
   onSelectDay: (key: string | null) => void;
-}
-
-function getMonthGridDays(year: number, month: number): Date[] {
-  const start = startOfWeek(startOfMonth(new Date(year, month, 1)));
-  const end = endOfWeek(endOfMonth(new Date(year, month, 1)));
-  return eachDayOfInterval({ start, end });
-}
-
-function dayKey(date: Date): string {
-  return format(date, "yyyy-MM-dd");
 }
 
 export default function YearCalendar({ year, events, selectedDay, onSelectDay }: YearCalendarProps) {
@@ -48,26 +31,14 @@ export default function YearCalendar({ year, events, selectedDay, onSelectDay }:
   // it would be odd for the highlight to sit on your device's date instead.
   const todayKey = dayKeyInZone(new Date(), timeZone);
 
-  const eventsByDay = useMemo(() => {
-    const map = new Map<string, EventListItem[]>();
-    for (const event of events) {
-      const key = dayKeyInZone(event.startsAt, timeZone);
-      const existing = map.get(key);
-      if (existing) {
-        existing.push(event);
-      } else {
-        map.set(key, [event]);
-      }
-    }
-    return map;
-  }, [events, timeZone]);
+  const eventsByDay = useEventsByDay(events, timeZone);
 
   const selectedEvents = selectedDay ? (eventsByDay.get(selectedDay) ?? []) : [];
 
   return (
     <div className="year-grid">
       {monthNames.map((monthName, month) => {
-        const days = getMonthGridDays(year, month);
+        const days = getMonthGridDays(new Date(year, month, 1));
         return (
           <div className="year-grid-month" key={monthName}>
             <div className="year-grid-month-title">{monthName}</div>

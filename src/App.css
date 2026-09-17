@@ -3,14 +3,6 @@
   height: 100dvh;
 }
 
-.app-title-who {
-  color: var(--brand-who);
-}
-
-.app-title-fights {
-  color: var(--brand-fights);
-}
-
 .nav-toolbar {
   display: flex;
   align-items: center;

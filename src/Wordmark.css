@@ -1,0 +1,11 @@
+.wordmark {
+  white-space: nowrap;
+}
+
+.wordmark-who {
+  color: var(--brand-who);
+}
+
+.wordmark-fights {
+  color: var(--brand-fights);
+}

@@ -12,6 +12,7 @@ import HeatmapCalendar from "./HeatmapCalendar";
 import QuarterCalendar from "./QuarterCalendar";
 import PromotionSidebar from "./PromotionSidebar";
 import SignInButton from "./SignInButton";
+import Wordmark from "./Wordmark";
 import AccountOverlay from "./AccountOverlay";
 import SiteSettingsButton from "./SiteSettingsButton";
 import SearchBar from "./SearchBar";
@@ -142,7 +143,7 @@ function App() {
             &#9776;
           </button>
           <h1 className="h4 mb-0">
-            <span className="app-title-who">Who</span><span className="app-title-fights">Fights</span>
+            <Wordmark />
           </h1>
         </div>
         <div className="d-flex align-items-center gap-2 flex-wrap">

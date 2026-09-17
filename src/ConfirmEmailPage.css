@@ -24,14 +24,6 @@
   margin: 0 0 20px;
 }
 
-.confirm-email-title-who {
-  color: var(--brand-who);
-}
-
-.confirm-email-title-fights {
-  color: var(--brand-fights);
-}
-
 .confirm-email-message {
   font-size: 15px;
   color: var(--text-body);

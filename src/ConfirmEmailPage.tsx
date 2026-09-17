@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import "./ConfirmEmailPage.css";
 import { confirmEmail } from "./auth";
+import Wordmark from "./Wordmark";
 
 type Status = "confirming" | "success" | "error" | "missing-params";
 
@@ -41,7 +42,7 @@ export default function ConfirmEmailPage() {
     <div className="confirm-email-page">
       <div className="confirm-email-card">
         <h1 className="confirm-email-title">
-          <span className="confirm-email-title-who">Who</span><span className="confirm-email-title-fights">Fights</span>
+          <Wordmark />
         </h1>
 
         {status === "confirming" && <p className="confirm-email-message">{t("confirmEmail.confirming")}</p>}

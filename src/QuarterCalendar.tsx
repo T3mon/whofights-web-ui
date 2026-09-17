@@ -5,17 +5,11 @@ import type { EventListItem } from "./types";
 import { colorForPromotion } from "./promotionColors";
 import { getDateLocale, getWeekdayLabels } from "./dateLocale";
 import { dayKeyInZone, useTimezone, zonedDate } from "./timezone";
+import { dayKey, fromDayKey, getMonthGridDays, useEventsByDay } from "./calendarData";
+import FighterLinks from "./FighterLinks";
 import FightCardExpander from "./FightCardExpander";
 
 const MAX_DOTS = 3;
-
-function dayKey(date: Date): string {
-  return format(date, "yyyy-MM-dd");
-}
-
-function fromDayKey(key: string): Date {
-  return new Date(key + "T00:00:00");
-}
 
 function weekStartKey(date: Date): string {
   return dayKey(startOfWeek(date));
@@ -43,16 +37,7 @@ export default function QuarterCalendar({ months, events }: QuarterCalendarProps
 
   const todayKey = dayKeyInZone(new Date(), timeZone);
 
-  const eventsByDay = useMemo(() => {
-    const map = new Map<string, EventListItem[]>();
-    for (const event of events) {
-      const key = dayKeyInZone(event.startsAt, timeZone);
-      const existing = map.get(key);
-      if (existing) existing.push(event);
-      else map.set(key, [event]);
-    }
-    return map;
-  }, [events, timeZone]);
+  const eventsByDay = useEventsByDay(events, timeZone);
 
   const rangeStart = weekStartKey(startOfMonth(months[0]));
   const rangeEnd = dayKey(endOfWeek(endOfMonth(months[months.length - 1])));
@@ -82,7 +67,7 @@ export default function QuarterCalendar({ months, events }: QuarterCalendarProps
     <div className="quarter-layout">
       <div className="quarter-months">
         {months.map((month) => {
-          const days = eachDayOfInterval({ start: startOfWeek(startOfMonth(month)), end: endOfWeek(endOfMonth(month)) });
+          const days = getMonthGridDays(month);
           return (
             <div key={month.toISOString()} className="quarter-month">
               <div className="quarter-month-title">{format(month, "MMMM", { locale: dateLocale })}</div>
@@ -154,15 +139,7 @@ export default function QuarterCalendar({ months, events }: QuarterCalendarProps
                   <div className="quarter-event-main">
                     <div className="quarter-event-headline">
                       {event.mainEvent ? (
-                        <>
-                          <a href={event.mainEvent.fighterALink} target="_blank" rel="noreferrer">
-                            {event.mainEvent.fighterA}
-                          </a>{" "}
-                          vs{" "}
-                          <a href={event.mainEvent.fighterBLink} target="_blank" rel="noreferrer">
-                            {event.mainEvent.fighterB}
-                          </a>
-                        </>
+                        <FighterLinks bout={event.mainEvent} />
                       ) : (
                         <a href={event.link} target="_blank" rel="noreferrer">
                           {event.title}

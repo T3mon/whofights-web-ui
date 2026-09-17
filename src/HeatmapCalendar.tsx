@@ -1,25 +1,13 @@
 import { useMemo } from "react";
-import { eachDayOfInterval, endOfMonth, endOfWeek, format, isSameMonth, startOfMonth, startOfWeek } from "date-fns";
+import { format, isSameMonth } from "date-fns";
 import { useTranslation } from "react-i18next";
 import type { EventListItem } from "./types";
 import { colorForPromotion } from "./promotionColors";
 import { getDateLocale, getWeekdayLabels } from "./dateLocale";
 import { dayKeyInZone, useTimezone, zonedDate } from "./timezone";
+import { dayKey, fromDayKey, getMonthGridDays, matchupLabel, useEventsByDay } from "./calendarData";
+import FighterLinks from "./FighterLinks";
 import FightCardExpander from "./FightCardExpander";
-
-function matchupLabel(event: EventListItem): string {
-  return event.mainEvent ? `${event.mainEvent.fighterA} vs ${event.mainEvent.fighterB}` : event.title;
-}
-
-function dayKey(date: Date): string {
-  return format(date, "yyyy-MM-dd");
-}
-
-function getMonthGridDays(month: Date): Date[] {
-  const start = startOfWeek(startOfMonth(month));
-  const end = endOfWeek(endOfMonth(month));
-  return eachDayOfInterval({ start, end });
-}
 
 interface HeatmapMonthProps {
   month: Date;
@@ -39,19 +27,7 @@ function HeatmapMonth({ month, events, size, selectedDay, onSelectDay }: Heatmap
 
   const todayKey = dayKeyInZone(new Date(), timeZone);
 
-  const eventsByDay = useMemo(() => {
-    const map = new Map<string, EventListItem[]>();
-    for (const event of events) {
-      const key = dayKeyInZone(event.startsAt, timeZone);
-      const existing = map.get(key);
-      if (existing) {
-        existing.push(event);
-      } else {
-        map.set(key, [event]);
-      }
-    }
-    return map;
-  }, [events, timeZone]);
+  const eventsByDay = useEventsByDay(events, timeZone);
 
   const days = getMonthGridDays(month);
   const selectedEvents = selectedDay ? (eventsByDay.get(selectedDay) ?? []) : [];
@@ -111,10 +87,10 @@ function HeatmapMonth({ month, events, size, selectedDay, onSelectDay }: Heatmap
         })}
       </div>
 
-      {selectedDay && isSameMonth(new Date(selectedDay + "T00:00:00"), month) && selectedEvents.length > 0 && (
+      {selectedDay && isSameMonth(fromDayKey(selectedDay), month) && selectedEvents.length > 0 && (
         <div className="heatmap-popover" role="dialog" aria-label={`Events on ${selectedDay}`}>
           <div className="heatmap-popover-header">
-            <strong>{format(new Date(selectedDay + "T00:00:00"), "EEEE, MMMM d, yyyy", { locale: dateLocale })}</strong>
+            <strong>{format(fromDayKey(selectedDay), "EEEE, MMMM d, yyyy", { locale: dateLocale })}</strong>
             <button type="button" className="heatmap-popover-close" onClick={() => onSelectDay(null)} aria-label={t("calendar.close")}>
               &times;
             </button>
@@ -132,13 +108,7 @@ function HeatmapMonth({ month, events, size, selectedDay, onSelectDay }: Heatmap
                   </a>
                   {event.mainEvent && (
                     <div className="heatmap-popover-subtitle">
-                      <a href={event.mainEvent.fighterALink} target="_blank" rel="noreferrer">
-                        {event.mainEvent.fighterA}
-                      </a>{" "}
-                      vs{" "}
-                      <a href={event.mainEvent.fighterBLink} target="_blank" rel="noreferrer">
-                        {event.mainEvent.fighterB}
-                      </a>
+                      <FighterLinks bout={event.mainEvent} />
                     </div>
                   )}
                   <FightCardExpander slug={event.slug} />

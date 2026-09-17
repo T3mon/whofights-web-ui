@@ -30,6 +30,14 @@ export function clearSession(): void {
   }
 }
 
+// Every sign-in endpoint answers with the same shape; parse and persist it once.
+async function sessionFromResponse(response: Response): Promise<Session> {
+  const data = (await response.json()) as { token: string; expiresAt: string; email: string };
+  const session: Session = { token: data.token, expiresAt: data.expiresAt, email: data.email };
+  saveSession(session);
+  return session;
+}
+
 function saveSession(session: Session): void {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
@@ -64,10 +72,7 @@ export async function signInWithGoogle(accessToken: string): Promise<Session> {
     throw new Error(await extractErrorMessage(response, "Google sign-in failed."));
   }
 
-  const data = (await response.json()) as { token: string; expiresAt: string; email: string };
-  const session: Session = { token: data.token, expiresAt: data.expiresAt, email: data.email };
-  saveSession(session);
-  return session;
+  return sessionFromResponse(response);
 }
 
 export async function register(email: string, password: string): Promise<void> {
@@ -93,10 +98,7 @@ export async function login(email: string, password: string): Promise<Session> {
     throw new Error(await extractErrorMessage(response, "Sign in failed."));
   }
 
-  const data = (await response.json()) as { token: string; expiresAt: string; email: string };
-  const session: Session = { token: data.token, expiresAt: data.expiresAt, email: data.email };
-  saveSession(session);
-  return session;
+  return sessionFromResponse(response);
 }
 
 // Confirming returns a session too - the link proves control of the inbox, so
@@ -112,10 +114,7 @@ export async function confirmEmail(userId: string, token: string): Promise<Sessi
     throw new Error(await extractErrorMessage(response, "Email confirmation failed."));
   }
 
-  const data = (await response.json()) as { token: string; expiresAt: string; email: string };
-  const session: Session = { token: data.token, expiresAt: data.expiresAt, email: data.email };
-  saveSession(session);
-  return session;
+  return sessionFromResponse(response);
 }
 
 export async function resendConfirmation(email: string): Promise<void> {

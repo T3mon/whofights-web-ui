@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import "./FightCardExpander.css";
 import { fetchEventDetail } from "./api";
+import FighterLinks from "./FighterLinks";
 import type { EventDetail } from "./types";
 
 interface FightCardExpanderProps {
@@ -49,13 +50,7 @@ export default function FightCardExpander({ slug }: FightCardExpanderProps) {
               {detail.bouts.map((bout, i) => (
                 <li key={i}>
                   <span className="fight-card-expander-matchup">
-                    <a href={bout.fighterALink} target="_blank" rel="noreferrer">
-                      {bout.fighterA}
-                    </a>{" "}
-                    vs{" "}
-                    <a href={bout.fighterBLink} target="_blank" rel="noreferrer">
-                      {bout.fighterB}
-                    </a>
+                    <FighterLinks bout={bout} />
                   </span>
                   {bout.weightClass && <span className="fight-card-expander-weight">{bout.weightClass}</span>}
                 </li>
