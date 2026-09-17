@@ -113,7 +113,7 @@ export default function SignInButton({ onSignedIn }: SignInButtonProps) {
       </button>
 
       {open && (
-        <div className="sign-in-backdrop" onClick={close}>
+        <div className="scrim-backdrop" onClick={close}>
           <div
             className="sign-in-modal"
             role="dialog"

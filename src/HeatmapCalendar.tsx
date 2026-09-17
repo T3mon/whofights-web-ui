@@ -4,37 +4,42 @@ import { useTranslation } from "react-i18next";
 import type { EventListItem } from "./types";
 import { colorForPromotion } from "./promotionColors";
 import { getDateLocale, getWeekdayLabels } from "./dateLocale";
-import { dayKeyInZone, useTimezone, zonedDate } from "./timezone";
-import { dayKey, fromDayKey, getMonthGridDays, matchupLabel, useEventsByDay } from "./calendarData";
-import FighterLinks from "./FighterLinks";
-import FightCardExpander from "./FightCardExpander";
+import { dayKeyInZone, useTimezone } from "./timezone";
+import { MAX_DAY_DOTS, dayKey, fromDayKey, getMonthGridDays, matchupLabel, useEventsByDay, weekStartKey } from "./calendarData";
+import DayPopover from "./DayPopover";
+
+export type HeatmapMonthSize = "large" | "medium" | "compact";
 
 interface HeatmapMonthProps {
   month: Date;
   events: EventListItem[];
-  size: "large" | "medium";
-  selectedDay: string | null;
-  onSelectDay: (key: string | null) => void;
+  size: HeatmapMonthSize;
+  // large / medium: a day is selected and opens its popover here.
+  selectedDay?: string | null;
+  onSelectDay?: (key: string | null) => void;
+  // compact: cells show dots only, and clicking a day selects its whole
+  // week for a list rendered elsewhere (see QuarterCalendar).
+  selectedWeekStart?: string;
+  onSelectWeek?: (weekStartKey: string) => void;
 }
 
-const MAX_MATCHUP_LINES: Record<"large" | "medium", number> = { large: 4, medium: 2 };
+const MAX_MATCHUP_LINES: Record<HeatmapMonthSize, number> = { large: 4, medium: 2, compact: 0 };
 
-function HeatmapMonth({ month, events, size, selectedDay, onSelectDay }: HeatmapMonthProps) {
+export function HeatmapMonth({ month, events, size, selectedDay, onSelectDay, selectedWeekStart, onSelectWeek }: HeatmapMonthProps) {
   const { t, i18n } = useTranslation();
   const dateLocale = getDateLocale(i18n.language);
   const timeZone = useTimezone();
   const weekdayLabels = useMemo(() => getWeekdayLabels(dateLocale), [dateLocale]);
+  const compact = size === "compact";
 
   const todayKey = dayKeyInZone(new Date(), timeZone);
-
   const eventsByDay = useEventsByDay(events, timeZone);
-
   const days = getMonthGridDays(month);
   const selectedEvents = selectedDay ? (eventsByDay.get(selectedDay) ?? []) : [];
 
   return (
     <div className={"heatmap-month heatmap-month-" + size}>
-      <div className="heatmap-month-title">{format(month, "MMMM yyyy", { locale: dateLocale })}</div>
+      <div className="heatmap-month-title">{format(month, compact ? "MMMM" : "MMMM yyyy", { locale: dateLocale })}</div>
       <div className="heatmap-weekdays">
         {weekdayLabels.map((label, i) => (
           <span key={i}>{label}</span>
@@ -47,11 +52,11 @@ function HeatmapMonth({ month, events, size, selectedDay, onSelectDay }: Heatmap
           const inMonth = isSameMonth(date, month);
           const today = key === todayKey;
           const isPast = key < todayKey;
-          const maxLines = MAX_MATCHUP_LINES[size];
+          const inWeek = compact && weekStartKey(date) === selectedWeekStart;
           // Most prominent first (bigger card = more bouts), not chronological -
           // the point of this line is "what's the headliner", not a schedule.
           const rankedEvents = dayEvents.slice().sort((a, b) => b.boutCount - a.boutCount);
-          const shownEvents = rankedEvents.slice(0, maxLines);
+          const shownEvents = rankedEvents.slice(0, MAX_MATCHUP_LINES[size]);
           const hiddenCount = rankedEvents.length - shownEvents.length;
           return (
             <button
@@ -63,59 +68,49 @@ function HeatmapMonth({ month, events, size, selectedDay, onSelectDay }: Heatmap
                 (today ? " heatmap-day-today" : "") +
                 (isPast ? " heatmap-day-past" : "") +
                 (dayEvents.length > 0 ? " heatmap-day-has-events" : "") +
-                (selectedDay === key ? " heatmap-day-selected" : "")
+                (selectedDay === key ? " heatmap-day-selected" : "") +
+                (inWeek ? " heatmap-day-in-week" : "")
               }
-              onClick={() => (dayEvents.length > 0 ? onSelectDay(selectedDay === key ? null : key) : undefined)}
-              disabled={dayEvents.length === 0}
+              onClick={() =>
+                compact
+                  ? onSelectWeek?.(weekStartKey(date))
+                  : dayEvents.length > 0
+                    ? onSelectDay?.(selectedDay === key ? null : key)
+                    : undefined
+              }
+              disabled={!compact && dayEvents.length === 0}
+              aria-label={compact ? format(date, "EEEE, MMMM d", { locale: dateLocale }) : undefined}
+              aria-pressed={compact ? inWeek : undefined}
             >
               <span className="heatmap-day-top">
                 <span className="heatmap-day-number">{date.getDate()}</span>
               </span>
-              {shownEvents.length > 0 && (
-                <span className="heatmap-matchups">
-                  {shownEvents.map((event) => (
-                    <span key={event.id} className="heatmap-matchup-line">
-                      <span className="heatmap-matchup-dot" style={{ backgroundColor: colorForPromotion(event.promotion.code) }} />
-                      <span className="heatmap-matchup-text">{matchupLabel(event)}</span>
-                    </span>
+              {compact ? (
+                <span className="heatmap-day-dots">
+                  {dayEvents.slice(0, MAX_DAY_DOTS).map((event) => (
+                    <span key={event.id} className="heatmap-matchup-dot" style={{ backgroundColor: colorForPromotion(event.promotion.code) }} />
                   ))}
-                  {hiddenCount > 0 && <span className="heatmap-matchup-more">{t("calendar.moreCount", { count: hiddenCount })}</span>}
                 </span>
+              ) : (
+                shownEvents.length > 0 && (
+                  <span className="heatmap-matchups">
+                    {shownEvents.map((event) => (
+                      <span key={event.id} className="heatmap-matchup-line">
+                        <span className="heatmap-matchup-dot" style={{ backgroundColor: colorForPromotion(event.promotion.code) }} />
+                        <span className="heatmap-matchup-text">{matchupLabel(event, t("calendar.versus"))}</span>
+                      </span>
+                    ))}
+                    {hiddenCount > 0 && <span className="heatmap-matchup-more">{t("calendar.moreCount", { count: hiddenCount })}</span>}
+                  </span>
+                )
               )}
             </button>
           );
         })}
       </div>
 
-      {selectedDay && isSameMonth(fromDayKey(selectedDay), month) && selectedEvents.length > 0 && (
-        <div className="heatmap-popover" role="dialog" aria-label={`Events on ${selectedDay}`}>
-          <div className="heatmap-popover-header">
-            <strong>{format(fromDayKey(selectedDay), "EEEE, MMMM d, yyyy", { locale: dateLocale })}</strong>
-            <button type="button" className="heatmap-popover-close" onClick={() => onSelectDay(null)} aria-label={t("calendar.close")}>
-              &times;
-            </button>
-          </div>
-          <ul className="heatmap-popover-list">
-            {selectedEvents
-              .slice()
-              .sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime())
-              .map((event) => (
-                <li key={event.id}>
-                  <a href={event.link} target="_blank" rel="noreferrer">
-                    <span className="heatmap-dot" style={{ backgroundColor: colorForPromotion(event.promotion.code) }} />
-                    <span className="heatmap-popover-time">{format(zonedDate(event.startsAt, timeZone), "h:mm a", { locale: dateLocale })}</span>
-                    <span className="heatmap-popover-title">{event.title}</span>
-                  </a>
-                  {event.mainEvent && (
-                    <div className="heatmap-popover-subtitle">
-                      <FighterLinks bout={event.mainEvent} />
-                    </div>
-                  )}
-                  <FightCardExpander slug={event.slug} />
-                </li>
-              ))}
-          </ul>
-        </div>
+      {!compact && selectedDay && onSelectDay && isSameMonth(fromDayKey(selectedDay), month) && selectedEvents.length > 0 && (
+        <DayPopover dayKey={selectedDay} events={selectedEvents} onClose={() => onSelectDay(null)} />
       )}
     </div>
   );

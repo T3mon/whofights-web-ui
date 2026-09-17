@@ -54,6 +54,18 @@
   --scrim-light: rgba(0, 0, 0, 0.5);
 }
 
+/* Full-screen scrim behind any centred dialog (sign-in, account panel). */
+.scrim-backdrop {
+  position: fixed;
+  inset: 0;
+  background: var(--scrim);
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
 /* Light mode "Warm Paper" - a softer, cream-toned light theme meant to
    read like paper rather than a screen: warm off-white surfaces, warm
    grays for text/borders instead of neutral ones, and an amber/terracotta

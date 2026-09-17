@@ -78,7 +78,7 @@ export default function AccountOverlay({ session, promotions, onSignOut }: Accou
       </button>
 
       {open && (
-        <div className="account-overlay-backdrop" onClick={() => setOpen(false)}>
+        <div className="scrim-backdrop account-overlay-backdrop" onClick={() => setOpen(false)}>
           <div className="account-overlay" role="dialog" aria-label={t("account.ariaLabel")} onClick={(e) => e.stopPropagation()}>
             <button type="button" className="account-overlay-close" onClick={() => setOpen(false)} aria-label={t("account.close")}>
               &times;

@@ -1,3 +1,6 @@
+/* Layout only - the month grids are HeatmapMonth in its compact size (see
+   HeatmapCalendar.css) and the list is EventList (EventList.css). */
+
 .quarter-layout {
   display: flex;
   flex-direction: column;
@@ -5,141 +8,27 @@
   min-height: 100%;
 }
 
-/* Months: three navigators side by side ------------------------------- */
-
 .quarter-months {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 14px;
 }
 
-.quarter-month {
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 14px 12px 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.quarter-month-title {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--text-heading);
-  padding: 0 6px;
-}
-
-.quarter-weekdays,
-.quarter-days {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 2px;
-}
-
-.quarter-weekdays span {
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--text-muted);
-}
-
-.quarter-day {
-  height: 46px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  padding: 0;
-  background: none;
-  border: none;
-  border-radius: 0;
-  color: var(--text-secondary);
-  cursor: pointer;
-}
-
-.quarter-day-outside {
-  opacity: 0.3;
-}
-
-.quarter-day-has-events {
-  color: var(--text-heading);
-}
-
-.quarter-day-in-week {
-  background: var(--bg-today-hover);
-}
-
-/* Round only the ends of the selected week so it reads as one band. */
-.quarter-day-in-week:nth-child(7n + 1) {
-  border-radius: 8px 0 0 8px;
-}
-
-.quarter-day-in-week:nth-child(7n) {
-  border-radius: 0 8px 8px 0;
-}
-
-.quarter-day:hover:not(.quarter-day-in-week) {
-  background: var(--bg-surface-hover);
-  border-radius: 8px;
-}
-
-.quarter-day:focus-visible {
-  outline: 2px solid var(--brand);
-  outline-offset: -2px;
-  border-radius: 8px;
-}
-
-.quarter-day-number {
-  width: 24px;
-  height: 24px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  font-size: 13px;
-  font-variant-numeric: tabular-nums;
-}
-
-.quarter-day-today .quarter-day-number {
-  background: var(--brand-who);
-  color: var(--text-on-accent);
-  font-weight: 800;
-}
-
-.quarter-day-dots {
-  display: flex;
-  gap: 3px;
-  height: 6px;
-}
-
-.quarter-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-}
-
-/* The selected week, in full ------------------------------------------- */
-
 .quarter-week {
   flex-grow: 1;
   background: var(--bg-surface);
   border: 1px solid var(--border-strong);
   border-radius: 12px;
-  padding: 12px 18px 10px;
+  padding: 12px 18px 14px;
   display: flex;
   flex-direction: column;
+  gap: 10px;
 }
 
 .quarter-week-header {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding-bottom: 8px;
 }
 
 .quarter-week-title {
@@ -171,112 +60,9 @@
 
 .quarter-week-empty {
   margin: 0;
-  padding: 18px 0;
+  padding: 8px 0;
   font-size: 14px;
   color: var(--text-secondary);
-  border-top: 1px solid var(--border);
-}
-
-.quarter-events {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-.quarter-event {
-  display: grid;
-  grid-template-columns: 52px minmax(0, 1fr) auto;
-  gap: 14px;
-  align-items: start;
-  padding: 10px 0;
-  border-top: 1px solid var(--border);
-}
-
-.quarter-event-day {
-  display: flex;
-  align-items: baseline;
-  gap: 5px;
-  line-height: 1;
-  padding-top: 2px;
-}
-
-.quarter-event-day-number {
-  font-size: 20px;
-  font-weight: 800;
-  color: var(--text-heading);
-  font-variant-numeric: tabular-nums;
-}
-
-.quarter-event-day-name {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--text-secondary);
-}
-
-.quarter-event-main {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.quarter-event-headline {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--text-heading);
-}
-
-.quarter-event-headline a {
-  color: inherit;
-  text-decoration: none;
-}
-
-.quarter-event-headline a:hover {
-  text-decoration: underline;
-}
-
-.quarter-event-sub {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 6px 10px;
-  font-size: 13px;
-  color: var(--text-secondary);
-}
-
-.quarter-pill {
-  height: 20px;
-  padding: 0 8px;
-  border-radius: 999px;
-  border: 1px solid;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  display: inline-flex;
-  align-items: center;
-  white-space: nowrap;
-}
-
-.quarter-event-title {
-  color: var(--text-body);
-  text-decoration: none;
-}
-
-.quarter-event-title:hover {
-  text-decoration: underline;
-}
-
-.quarter-event-time {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text-heading);
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-  padding-top: 3px;
 }
 
 /* Phones: months become a swipeable strip, one month per screen. -------- */
@@ -296,33 +82,12 @@
     display: none;
   }
 
-  .quarter-month {
+  .quarter-months > .heatmap-month {
     flex: 0 0 100%;
     scroll-snap-align: start;
   }
 
-  .quarter-day {
-    height: 44px;
-  }
-
   .quarter-week {
-    padding: 10px 12px 8px;
-  }
-
-  .quarter-event {
-    grid-template-columns: 44px minmax(0, 1fr) auto;
-    gap: 10px;
-  }
-
-  .quarter-event-day-number {
-    font-size: 18px;
-  }
-
-  .quarter-event-headline {
-    font-size: 14px;
-  }
-
-  .quarter-event-time {
-    font-size: 13px;
+    padding: 10px 12px 12px;
   }
 }

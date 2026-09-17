@@ -65,7 +65,8 @@
     "moreCount": "+{{count}} المزيد",
     "previousWeek": "الأسبوع السابق",
     "nextWeek": "الأسبوع التالي",
-    "noEventsThisWeek": "لا توجد فعاليات هذا الأسبوع."
+    "noEventsThisWeek": "لا توجد فعاليات هذا الأسبوع.",
+    "versus": "ضد"
   },
   "app": {
     "loading": "جارٍ التحميل…",

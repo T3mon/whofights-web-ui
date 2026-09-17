@@ -34,6 +34,101 @@
   min-height: 360px;
 }
 
+/* Compact: a navigator, not a schedule - day numbers and promotion dots,
+   clicking a day selects its week (QuarterCalendar lists it). */
+.heatmap-month-compact {
+  border-radius: 12px;
+  padding: 14px 12px 10px;
+}
+
+.heatmap-month-compact .heatmap-month-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-heading);
+  padding: 0 6px 8px;
+}
+
+.heatmap-month-compact .heatmap-weekdays {
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.heatmap-month-compact .heatmap-days {
+  gap: 2px;
+}
+
+.heatmap-month-compact .heatmap-day {
+  height: 46px;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
+  color: var(--text-secondary);
+  cursor: pointer;
+  overflow: visible;
+}
+
+.heatmap-month-compact .heatmap-day-has-events {
+  color: var(--text-heading);
+}
+
+.heatmap-month-compact .heatmap-day-outside {
+  opacity: 0.3;
+}
+
+.heatmap-month-compact .heatmap-day-number {
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.heatmap-month-compact .heatmap-day-today .heatmap-day-number {
+  padding: 0;
+  min-width: 0;
+}
+
+.heatmap-month-compact .heatmap-day:hover:not(.heatmap-day-in-week) {
+  background: var(--bg-surface-hover);
+  border-radius: 8px;
+}
+
+.heatmap-month-compact .heatmap-day:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: -2px;
+  border-radius: 8px;
+}
+
+.heatmap-month-compact .heatmap-day-in-week {
+  background: var(--bg-today-hover);
+}
+
+/* Round only the ends of the selected week so it reads as one band. */
+.heatmap-month-compact .heatmap-day-in-week:nth-child(7n + 1) {
+  border-radius: 8px 0 0 8px;
+}
+
+.heatmap-month-compact .heatmap-day-in-week:nth-child(7n) {
+  border-radius: 0 8px 8px 0;
+}
+
+.heatmap-day-dots {
+  display: flex;
+  gap: 3px;
+  height: 6px;
+}
+
+.heatmap-month-compact .heatmap-matchup-dot {
+  width: 6px;
+  height: 6px;
+}
+
 .heatmap-month-title {
   font-weight: 600;
   color: var(--text-bright);
@@ -181,93 +276,4 @@
   font-size: 10px;
   color: var(--text-muted);
   padding-left: 9px;
-}
-
-.heatmap-popover {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: min(460px, 92%);
-  max-height: 80%;
-  overflow-y: auto;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-strong);
-  border-radius: 10px;
-  box-shadow: 0 12px 32px var(--shadow-md);
-  z-index: 20;
-  padding: 16px 18px;
-}
-
-.heatmap-popover-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: var(--text-heading);
-  font-size: 15px;
-  margin-bottom: 12px;
-}
-
-.heatmap-popover-close {
-  background: none;
-  border: none;
-  color: var(--text-secondary);
-  font-size: 22px;
-  line-height: 1;
-  cursor: pointer;
-}
-
-.heatmap-popover-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.heatmap-popover-list > li > a {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  text-decoration: none;
-  color: var(--text-bright);
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.heatmap-popover-list > li > a:hover {
-  text-decoration: underline;
-}
-
-.heatmap-dot {
-  display: inline-block;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.heatmap-popover-subtitle {
-  font-size: 13px;
-  color: var(--text-secondary);
-  margin-left: 20px;
-}
-
-.heatmap-popover-subtitle a {
-  color: var(--text-secondary);
-  text-decoration: none;
-  font-weight: 600;
-}
-
-.heatmap-popover-subtitle a:hover {
-  text-decoration: underline;
-  color: var(--text-body);
-}
-
-.heatmap-popover-time {
-  color: var(--text-secondary);
-  font-weight: 400;
-  font-variant-numeric: tabular-nums;
-  flex-shrink: 0;
 }

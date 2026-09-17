@@ -1,23 +1,12 @@
-import { useMemo, useState } from "react";
-import { addWeeks, eachDayOfInterval, endOfMonth, endOfWeek, format, isSameMonth, startOfMonth, startOfWeek } from "date-fns";
+import { useState } from "react";
+import { addWeeks, eachDayOfInterval, endOfMonth, endOfWeek, format, isSameMonth, startOfMonth } from "date-fns";
 import { useTranslation } from "react-i18next";
 import type { EventListItem } from "./types";
-import { colorForPromotion } from "./promotionColors";
-import { getDateLocale, getWeekdayLabels } from "./dateLocale";
-import { dayKeyInZone, useTimezone, zonedDate } from "./timezone";
-import { dayKey, fromDayKey, getMonthGridDays, useEventsByDay } from "./calendarData";
-import FighterLinks from "./FighterLinks";
-import FightCardExpander from "./FightCardExpander";
-
-const MAX_DOTS = 3;
-
-function weekStartKey(date: Date): string {
-  return dayKey(startOfWeek(date));
-}
-
-function shortLocation(location: string | null): string | null {
-  return location ? location.split(",").slice(0, 2).join(",") : null;
-}
+import { getDateLocale } from "./dateLocale";
+import { dayKeyInZone, useTimezone } from "./timezone";
+import { dayKey, fromDayKey, useEventsByDay, weekStartKey } from "./calendarData";
+import { HeatmapMonth } from "./HeatmapCalendar";
+import EventList from "./EventList";
 
 interface QuarterCalendarProps {
   months: Date[];
@@ -32,11 +21,9 @@ export default function QuarterCalendar({ months, events }: QuarterCalendarProps
   const { t, i18n } = useTranslation();
   const dateLocale = getDateLocale(i18n.language);
   const timeZone = useTimezone();
-  const weekdayLabels = useMemo(() => getWeekdayLabels(dateLocale), [dateLocale]);
   const [pickedWeek, setPickedWeek] = useState<string | null>(null);
 
   const todayKey = dayKeyInZone(new Date(), timeZone);
-
   const eventsByDay = useEventsByDay(events, timeZone);
 
   const rangeStart = weekStartKey(startOfMonth(months[0]));
@@ -49,9 +36,7 @@ export default function QuarterCalendar({ months, events }: QuarterCalendarProps
     pickedWeek && inRange(pickedWeek) ? pickedWeek : inRange(todayKey) ? weekStartKey(fromDayKey(todayKey)) : rangeStart;
 
   const weekDays = eachDayOfInterval({ start: fromDayKey(weekStart), end: endOfWeek(fromDayKey(weekStart)) });
-  const weekEvents = weekDays
-    .flatMap((day) => eventsByDay.get(dayKey(day)) ?? [])
-    .sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime());
+  const weekEvents = weekDays.flatMap((day) => eventsByDay.get(dayKey(day)) ?? []);
 
   const weekEnd = weekDays[weekDays.length - 1];
   const weekLabel = isSameMonth(weekDays[0], weekEnd)
@@ -66,49 +51,16 @@ export default function QuarterCalendar({ months, events }: QuarterCalendarProps
   return (
     <div className="quarter-layout">
       <div className="quarter-months">
-        {months.map((month) => {
-          const days = getMonthGridDays(month);
-          return (
-            <div key={month.toISOString()} className="quarter-month">
-              <div className="quarter-month-title">{format(month, "MMMM", { locale: dateLocale })}</div>
-              <div className="quarter-weekdays">
-                {weekdayLabels.map((label, i) => (
-                  <span key={i}>{label}</span>
-                ))}
-              </div>
-              <div className="quarter-days">
-                {days.map((date) => {
-                  const key = dayKey(date);
-                  const dayEvents = eventsByDay.get(key) ?? [];
-                  const inWeek = weekStartKey(date) === weekStart;
-                  return (
-                    <button
-                      key={key}
-                      type="button"
-                      className={
-                        "quarter-day" +
-                        (isSameMonth(date, month) ? "" : " quarter-day-outside") +
-                        (key === todayKey ? " quarter-day-today" : "") +
-                        (dayEvents.length > 0 ? " quarter-day-has-events" : "") +
-                        (inWeek ? " quarter-day-in-week" : "")
-                      }
-                      onClick={() => setPickedWeek(weekStartKey(date))}
-                      aria-label={format(date, "EEEE, MMMM d", { locale: dateLocale })}
-                      aria-pressed={inWeek}
-                    >
-                      <span className="quarter-day-number">{date.getDate()}</span>
-                      <span className="quarter-day-dots">
-                        {dayEvents.slice(0, MAX_DOTS).map((event) => (
-                          <span key={event.id} className="quarter-dot" style={{ backgroundColor: colorForPromotion(event.promotion.code) }} />
-                        ))}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          );
-        })}
+        {months.map((month) => (
+          <HeatmapMonth
+            key={month.toISOString()}
+            month={month}
+            events={events}
+            size="compact"
+            selectedWeekStart={weekStart}
+            onSelectWeek={setPickedWeek}
+          />
+        ))}
       </div>
 
       <section className="quarter-week" aria-label={weekLabel}>
@@ -121,49 +73,10 @@ export default function QuarterCalendar({ months, events }: QuarterCalendarProps
             ›
           </button>
         </div>
-
         {weekEvents.length === 0 ? (
           <p className="quarter-week-empty">{t("calendar.noEventsThisWeek")}</p>
         ) : (
-          <ul className="quarter-events">
-            {weekEvents.map((event) => {
-              const starts = zonedDate(event.startsAt, timeZone);
-              const color = colorForPromotion(event.promotion.code);
-              const location = shortLocation(event.location);
-              return (
-                <li key={event.id} className="quarter-event">
-                  <div className="quarter-event-day">
-                    <span className="quarter-event-day-number">{format(starts, "d")}</span>
-                    <span className="quarter-event-day-name">{format(starts, "EEE", { locale: dateLocale })}</span>
-                  </div>
-                  <div className="quarter-event-main">
-                    <div className="quarter-event-headline">
-                      {event.mainEvent ? (
-                        <FighterLinks bout={event.mainEvent} />
-                      ) : (
-                        <a href={event.link} target="_blank" rel="noreferrer">
-                          {event.title}
-                        </a>
-                      )}
-                    </div>
-                    <div className="quarter-event-sub">
-                      <span className="quarter-pill" style={{ color, backgroundColor: color + "22", borderColor: color + "55" }}>
-                        {event.promotion.code}
-                      </span>
-                      {event.mainEvent && (
-                        <a href={event.link} target="_blank" rel="noreferrer" className="quarter-event-title">
-                          {event.title}
-                        </a>
-                      )}
-                      {location && <span className="quarter-event-location">{location}</span>}
-                    </div>
-                    <FightCardExpander slug={event.slug} />
-                  </div>
-                  <span className="quarter-event-time">{format(starts, "h:mm a", { locale: dateLocale })}</span>
-                </li>
-              );
-            })}
-          </ul>
+          <EventList events={weekEvents} headline="matchup" showDay />
         )}
       </section>
     </div>

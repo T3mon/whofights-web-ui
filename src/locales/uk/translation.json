@@ -65,7 +65,8 @@
     "moreCount": "ще +{{count}}",
     "previousWeek": "Попередній тиждень",
     "nextWeek": "Наступний тиждень",
-    "noEventsThisWeek": "Цього тижня подій немає."
+    "noEventsThisWeek": "Цього тижня подій немає.",
+    "versus": "vs"
   },
   "app": {
     "loading": "Завантаження…",

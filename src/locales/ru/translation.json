@@ -65,7 +65,8 @@
     "moreCount": "ещё +{{count}}",
     "previousWeek": "Предыдущая неделя",
     "nextWeek": "Следующая неделя",
-    "noEventsThisWeek": "На этой неделе событий нет."
+    "noEventsThisWeek": "На этой неделе событий нет.",
+    "versus": "vs"
   },
   "app": {
     "loading": "Загрузка…",

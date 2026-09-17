@@ -124,7 +124,7 @@ export default function SearchBar({ events, onJumpToEvent }: SearchBarProps) {
                       <span className="search-bar-result-title">{event.title}</span>
                       {event.mainEvent && (
                         <span className="search-bar-result-matchup">
-                          {event.mainEvent.fighterA} vs {event.mainEvent.fighterB}
+                          {event.mainEvent.fighterA} {t("calendar.versus")} {event.mainEvent.fighterB}
                         </span>
                       )}
                     </span>

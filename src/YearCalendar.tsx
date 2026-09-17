@@ -4,11 +4,9 @@ import { useTranslation } from "react-i18next";
 import type { EventListItem } from "./types";
 import { colorForPromotion } from "./promotionColors";
 import { getDateLocale, getWeekdayLabels } from "./dateLocale";
-import { dayKeyInZone, useTimezone, zonedDate } from "./timezone";
-import { dayKey, getMonthGridDays, useEventsByDay } from "./calendarData";
-import FightCardExpander from "./FightCardExpander";
-
-const MAX_DOTS_PER_DAY = 4;
+import { dayKeyInZone, useTimezone } from "./timezone";
+import { MAX_DAY_DOTS, dayKey, getMonthGridDays, useEventsByDay } from "./calendarData";
+import DayPopover from "./DayPopover";
 
 interface YearCalendarProps {
   year: number;
@@ -18,7 +16,7 @@ interface YearCalendarProps {
 }
 
 export default function YearCalendar({ year, events, selectedDay, onSelectDay }: YearCalendarProps) {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const dateLocale = getDateLocale(i18n.language);
   const timeZone = useTimezone();
   const monthNames = useMemo(
@@ -72,7 +70,7 @@ export default function YearCalendar({ year, events, selectedDay, onSelectDay }:
                     <span className="year-grid-day-number">{date.getDate()}</span>
                     {dayEvents.length > 0 && (
                       <span className="year-grid-day-dots">
-                        {dayEvents.slice(0, MAX_DOTS_PER_DAY).map((event) => (
+                        {dayEvents.slice(0, MAX_DAY_DOTS).map((event) => (
                           <span
                             key={event.id}
                             className="year-grid-dot"
@@ -90,46 +88,7 @@ export default function YearCalendar({ year, events, selectedDay, onSelectDay }:
       })}
 
       {selectedDay && selectedEvents.length > 0 && (
-        <div className="year-grid-popover" role="dialog" aria-label={`Events on ${selectedDay}`}>
-          <div className="year-grid-popover-header">
-            <strong>{format(new Date(selectedDay + "T00:00:00"), "EEEE, MMMM d, yyyy", { locale: dateLocale })}</strong>
-            <button type="button" className="year-grid-popover-close" onClick={() => onSelectDay(null)} aria-label={t("calendar.close")}>
-              &times;
-            </button>
-          </div>
-          <ul className="year-grid-popover-list">
-            {selectedEvents
-              .slice()
-              .sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime())
-              .map((event) => (
-                <li key={event.id}>
-                  <a href={event.link} target="_blank" rel="noreferrer">
-                    <span
-                      className="year-grid-dot"
-                      style={{ backgroundColor: colorForPromotion(event.promotion.code) }}
-                    />
-                    <span className="year-grid-popover-time">{format(zonedDate(event.startsAt, timeZone), "h:mm a", { locale: dateLocale })}</span>
-                    <span className="year-grid-popover-title">{event.title}</span>
-                  </a>
-                  {event.mainEvent && (
-                    <div className="year-grid-popover-subtitle">
-                      <a href={event.mainEvent.fighterALink} target="_blank" rel="noreferrer">
-                        {event.mainEvent.fighterA}
-                      </a>{" "}
-                      vs{" "}
-                      <a href={event.mainEvent.fighterBLink} target="_blank" rel="noreferrer">
-                        {event.mainEvent.fighterB}
-                      </a>
-                    </div>
-                  )}
-                  <FightCardExpander slug={event.slug} />
-                </li>
-              ))}
-          </ul>
-          <div className="year-grid-popover-footnote">
-            {t("calendar.localTimezoneNote", { zone: timeZone.replace(/_/g, " ") })}
-          </div>
-        </div>
+        <DayPopover dayKey={selectedDay} events={selectedEvents} onClose={() => onSelectDay(null)} />
       )}
     </div>
   );

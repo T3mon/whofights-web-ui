@@ -6,12 +6,19 @@ import { dayKeyInZone } from "./timezone";
 // The calendar views all bucket events by calendar day and lay months out
 // as full weeks; this is the one place those rules live.
 
+// How many promotion dots a small day cell shows before it stops.
+export const MAX_DAY_DOTS = 4;
+
 export function dayKey(date: Date): string {
   return format(date, "yyyy-MM-dd");
 }
 
 export function fromDayKey(key: string): Date {
   return new Date(key + "T00:00:00");
+}
+
+export function weekStartKey(date: Date): string {
+  return dayKey(startOfWeek(date));
 }
 
 // Every day shown in a month grid: the month itself plus the leading and
@@ -35,6 +42,16 @@ export function useEventsByDay(events: EventListItem[], timeZone: string): Map<s
   }, [events, timeZone]);
 }
 
-export function matchupLabel(event: EventListItem): string {
-  return event.mainEvent ? `${event.mainEvent.fighterA} vs ${event.mainEvent.fighterB}` : event.title;
+export function sortByStart(events: EventListItem[]): EventListItem[] {
+  return events.slice().sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime());
+}
+
+export function matchupLabel(event: EventListItem, versus: string): string {
+  return event.mainEvent ? `${event.mainEvent.fighterA} ${versus} ${event.mainEvent.fighterB}` : event.title;
+}
+
+// "Las Vegas, Nevada, United States" -> "Las Vegas, Nevada"; the country
+// rarely adds anything a fight fan needs at a glance.
+export function shortLocation(location: string | null): string | null {
+  return location ? location.split(",").slice(0, 2).join(",") : null;
 }

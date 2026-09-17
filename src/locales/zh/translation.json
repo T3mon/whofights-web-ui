@@ -65,7 +65,8 @@
     "moreCount": "还有 {{count}} 场",
     "previousWeek": "上一周",
     "nextWeek": "下一周",
-    "noEventsThisWeek": "本周没有赛事。"
+    "noEventsThisWeek": "本周没有赛事。",
+    "versus": "vs"
   },
   "app": {
     "loading": "加载中…",
