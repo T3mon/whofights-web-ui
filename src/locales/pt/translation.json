@@ -36,6 +36,8 @@
     "ariaLabel": "Configurações da conta",
     "close": "Fechar",
     "notifications": "Notificações",
+    "weeklyDigest": "Resumo semanal por e-mail",
+    "weeklyDigestHint": "Toda segunda-feira: os eventos da próxima semana das promoções que você acompanha, com horários em {{zone}}.",
     "favoriteFighters": "Lutadores favoritos",
     "trackedPromotions": "Promotoras seguidas",
     "trackedPromotionsHint": "As notificações abrangem apenas as promoções que você acompanha aqui.",
@@ -44,10 +46,7 @@
     "comingSoon": "Em breve",
     "searchFightersPlaceholder": "Buscar lutadores…",
     "noFavoritesYet": "Ainda sem favoritos.",
-    "signOut": "Sair",
-    "notificationNewEvents": "Novos eventos adicionados",
-    "notificationCardUpdates": "Atualizações do card",
-    "notificationStartingSoon": "Evento prestes a começar"
+    "signOut": "Sair"
   },
   "search": {
     "ariaLabel": "Buscar eventos",
@@ -98,7 +97,15 @@
     "confirming": "Confirmando seu email…",
     "success": "Seu email foi confirmado. Entrando…",
     "error": "Este link de confirmação é inválido ou expirou.",
-    "invalidLink": "Este link de confirmação está sem informações necessárias.",
+    "invalidLink": "Este link de confirmação está sem informações necessárias."
+  },
+  "page": {
     "backToApp": "Voltar ao WhoFights"
+  },
+  "unsubscribe": {
+    "working": "Cancelando a inscrição…",
+    "success": "Pronto: você não receberá mais o resumo semanal. É possível reativá-lo nas configurações da sua conta.",
+    "error": "Não foi possível cancelar a inscrição. Tente novamente mais tarde ou desative o resumo nas configurações da sua conta.",
+    "invalidLink": "Este link de cancelamento está incompleto."
   }
 }

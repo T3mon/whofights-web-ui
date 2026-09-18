@@ -36,6 +36,8 @@
     "ariaLabel": "Account settings",
     "close": "Close",
     "notifications": "Notifications",
+    "weeklyDigest": "Weekly email digest",
+    "weeklyDigestHint": "Every Monday: the coming week’s events from the promotions you track, with times in {{zone}}.",
     "favoriteFighters": "Favorite Fighters",
     "trackedPromotions": "Tracked Promotions",
     "trackedPromotionsHint": "Notifications only cover the promotions you track here.",
@@ -44,10 +46,7 @@
     "comingSoon": "Coming soon",
     "searchFightersPlaceholder": "Search fighters…",
     "noFavoritesYet": "No favorites yet.",
-    "signOut": "Sign out",
-    "notificationNewEvents": "New events added",
-    "notificationCardUpdates": "Fight card updates",
-    "notificationStartingSoon": "Event starting soon"
+    "signOut": "Sign out"
   },
   "search": {
     "ariaLabel": "Search events",
@@ -98,7 +97,15 @@
     "confirming": "Confirming your email…",
     "success": "Your email is confirmed. Signing you in…",
     "error": "This confirmation link is invalid or has expired.",
-    "invalidLink": "This confirmation link is missing information.",
+    "invalidLink": "This confirmation link is missing information."
+  },
+  "page": {
     "backToApp": "Back to WhoFights"
+  },
+  "unsubscribe": {
+    "working": "Unsubscribing…",
+    "success": "Done — you won’t get the weekly digest anymore. You can turn it back on in your account settings.",
+    "error": "Couldn’t unsubscribe. Try again later, or turn the digest off in your account settings.",
+    "invalidLink": "This unsubscribe link is missing information."
   }
 }

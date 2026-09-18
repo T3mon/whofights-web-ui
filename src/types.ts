@@ -12,6 +12,14 @@ export interface PromotionFollows {
   promotionKeys: string[];
 }
 
+// From GET/PUT /api/me/notifications.
+export interface NotificationPreferences {
+  weeklyDigestEmail: boolean;
+  // IANA zone the Monday digest renders times in - the calendar sends
+  // whatever zone it is currently showing.
+  timeZone: string;
+}
+
 export interface Bout {
   fighterA: string;
   fighterALink: string;

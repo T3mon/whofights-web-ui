@@ -36,6 +36,8 @@
     "ariaLabel": "账户设置",
     "close": "关闭",
     "notifications": "通知",
+    "weeklyDigest": "每周邮件摘要",
+    "weeklyDigestHint": "每周一：你关注的赛事组织在未来一周的赛事，时间按 {{zone}} 显示。",
     "favoriteFighters": "收藏选手",
     "trackedPromotions": "关注的推广方",
     "trackedPromotionsHint": "通知仅涵盖你在此关注的赛事组织。",
@@ -44,10 +46,7 @@
     "comingSoon": "即将推出",
     "searchFightersPlaceholder": "搜索选手…",
     "noFavoritesYet": "暂无收藏。",
-    "signOut": "退出登录",
-    "notificationNewEvents": "新增赛事",
-    "notificationCardUpdates": "赛事卡更新",
-    "notificationStartingSoon": "赛事即将开始"
+    "signOut": "退出登录"
   },
   "search": {
     "ariaLabel": "搜索赛事",
@@ -98,7 +97,15 @@
     "confirming": "正在确认您的邮箱…",
     "success": "邮箱已确认，正在为您登录…",
     "error": "此确认链接无效或已过期。",
-    "invalidLink": "此确认链接缺少必要信息。",
+    "invalidLink": "此确认链接缺少必要信息。"
+  },
+  "page": {
     "backToApp": "返回 WhoFights"
+  },
+  "unsubscribe": {
+    "working": "正在退订…",
+    "success": "完成——你将不再收到每周摘要。可在账户设置中重新开启。",
+    "error": "退订失败。请稍后重试，或在账户设置中关闭摘要。",
+    "invalidLink": "此退订链接缺少信息。"
   }
 }

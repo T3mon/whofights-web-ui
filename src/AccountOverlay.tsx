@@ -1,11 +1,13 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import "./AccountOverlay.css";
-import { fetchFollows, saveFollows } from "./api";
+import { fetchFollows, fetchNotificationPreferences, saveFollows, saveNotificationPreferences } from "./api";
 import type { Session } from "./auth";
 import PromotionTree from "./PromotionTree";
-import type { EventListItem, Promotion } from "./types";
-import { useKeySet } from "./useKeySet";
+import { useTimezone } from "./timezone";
+import type { EventListItem, NotificationPreferences, Promotion } from "./types";
+import { setManyIn, toggleIn } from "./useKeySet";
+import { type RemoteStatus, useRemoteSetting } from "./useRemoteSetting";
 
 interface AccountOverlayProps {
   session: Session;
@@ -14,14 +16,20 @@ interface AccountOverlayProps {
   onSignOut: () => void;
 }
 
-// Coalesces a burst of checkbox clicks into one PUT. Also keeps saves in
-// order: each PUT replaces the whole list, so two in flight at once could
-// land newest-first and leave the server holding the stale one.
-const SAVE_DEBOUNCE_MS = 400;
+const SECTIONS = ["notifications", "fighters", "promotions"] as const;
+type Section = (typeof SECTIONS)[number];
 
-type Section = "notifications" | "fighters" | "promotions";
+// Links in the digest email (and anywhere else) can open the overlay on a
+// given panel with ?account=<section>. Read once, then scrubbed from the
+// URL so a reload doesn't pop the overlay again.
+function sectionFromUrl(): Section | null {
+  const wanted = new URLSearchParams(window.location.search).get("account");
+  if (!wanted || !(SECTIONS as readonly string[]).includes(wanted)) return null;
+  window.history.replaceState(null, "", window.location.pathname);
+  return wanted as Section;
+}
 
-const NOTIFICATION_KEYS = ["new-events", "card-updates", "starting-soon"] as const;
+const NO_NOTIFICATIONS: NotificationPreferences = { weeklyDigestEmail: false, timeZone: "UTC" };
 
 // Concept 3: no dropdown step at all - clicking the trigger goes straight
 // into one large settings-page-style overlay with a left sub-nav, the way
@@ -32,63 +40,38 @@ const NOTIFICATION_KEYS = ["new-events", "card-updates", "starting-soon"] as con
 // in this overlay is genuinely per-account, so it stays gated behind
 // having a session.
 //
-// Tracked promotions persist through /api/me/follows. Notifications and
-// favorite fighters are still design placeholders.
+// Tracked promotions and notification settings persist through /api/me.
+// Favorite fighters are still a design placeholder.
 // TODO: favorites need a favorite-fighters table before they can save.
 export default function AccountOverlay({ session, promotions, events, onSignOut }: AccountOverlayProps) {
   const { t } = useTranslation();
+  const timeZone = useTimezone();
   const NAV_ITEMS: { key: Section; label: string }[] = [
     { key: "notifications", label: t("account.notifications") },
     { key: "fighters", label: t("account.favoriteFighters") },
     { key: "promotions", label: t("account.trackedPromotions") },
   ];
-  const NOTIFICATION_LABELS: Record<(typeof NOTIFICATION_KEYS)[number], string> = {
-    "new-events": t("account.notificationNewEvents"),
-    "card-updates": t("account.notificationCardUpdates"),
-    "starting-soon": t("account.notificationStartingSoon"),
-  };
-  const [open, setOpen] = useState(false);
-  const [section, setSection] = useState<Section>("notifications");
-  const { keys: notifications, toggle: toggleNotification } = useKeySet(() => new Set(["new-events"]));
+  const [initialSection] = useState(sectionFromUrl);
+  const [open, setOpen] = useState(initialSection !== null);
+  const [section, setSection] = useState<Section>(initialSection ?? "notifications");
   const [fighterSearch, setFighterSearch] = useState("");
   const initial = session.email.charAt(0).toUpperCase();
 
-  const { keys: tracked, setKeys: setTracked, toggle: toggleTracked, setMany: setManyTracked } = useKeySet(() => new Set());
-  const [trackedStatus, setTrackedStatus] = useState<"loading" | "ready" | "loadFailed" | "saveFailed">("loading");
-  // Flipped by the user's own edits only - the initial load must not
-  // trigger a save of what the server just told us.
-  const dirty = useRef(false);
+  const { token } = session;
+  const loadTracked = useCallback(async () => new Set(await fetchFollows(token)), [token]);
+  const saveTracked = useCallback((keys: Set<string>) => saveFollows(token, [...keys]), [token]);
+  const tracked = useRemoteSetting(open, new Set<string>(), loadTracked, saveTracked);
 
-  useEffect(() => {
-    if (!open || trackedStatus !== "loading") return;
-    let cancelled = false;
-    fetchFollows(session.token)
-      .then((keys) => {
-        if (cancelled) return;
-        setTracked(new Set(keys));
-        setTrackedStatus("ready");
-      })
-      .catch(() => {
-        if (!cancelled) setTrackedStatus("loadFailed");
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [open, trackedStatus, session.token, setTracked]);
+  const loadNotifications = useCallback(() => fetchNotificationPreferences(token), [token]);
+  const saveNotifications = useCallback((prefs: NotificationPreferences) => saveNotificationPreferences(token, prefs), [token]);
+  const notifications = useRemoteSetting(open, NO_NOTIFICATIONS, loadNotifications, saveNotifications);
 
-  useEffect(() => {
-    if (!dirty.current) return;
-    const handle = setTimeout(() => {
-      dirty.current = false;
-      saveFollows(session.token, [...tracked]).catch(() => setTrackedStatus("saveFailed"));
-    }, SAVE_DEBOUNCE_MS);
-    return () => clearTimeout(handle);
-  }, [tracked, session.token]);
-
-  function editTracked(edit: () => void) {
-    dirty.current = true;
-    setTrackedStatus("ready");
-    edit();
+  // The load/error lines both panels show above their content.
+  function statusMessage(status: RemoteStatus) {
+    if (status === "loading") return <p className="account-overlay-empty">{t("app.loading")}</p>;
+    if (status === "loadFailed") return <p className="account-overlay-error">{t("account.loadFailed")}</p>;
+    if (status === "saveFailed") return <p className="account-overlay-error">{t("account.saveFailed")}</p>;
+    return null;
   }
 
   return (
@@ -142,17 +125,26 @@ export default function AccountOverlay({ session, promotions, events, onSignOut 
             <div className="account-overlay-content">
               {section === "notifications" && (
                 <div className="account-overlay-panel">
-                  <h2 className="account-overlay-panel-title">
-                    {t("account.notifications")} <span className="account-overlay-badge">{t("account.comingSoon")}</span>
-                  </h2>
-                  <div className="account-overlay-list">
-                    {NOTIFICATION_KEYS.map((key) => (
-                      <label className="account-overlay-toggle-row" key={key}>
-                        <span>{NOTIFICATION_LABELS[key]}</span>
-                        <input type="checkbox" checked={notifications.has(key)} onChange={() => toggleNotification(key)} />
+                  <h2 className="account-overlay-panel-title">{t("account.notifications")}</h2>
+                  {statusMessage(notifications.status)}
+                  {notifications.status !== "loading" && notifications.status !== "loadFailed" && (
+                    <div className="account-overlay-list">
+                      <label className="account-overlay-toggle-row">
+                        <span>
+                          <span className="account-overlay-toggle-label">{t("account.weeklyDigest")}</span>
+                          <span className="account-overlay-toggle-hint">{t("account.weeklyDigestHint", { zone: timeZone })}</span>
+                        </span>
+                        <input
+                          type="checkbox"
+                          className="promotion-checkbox"
+                          checked={notifications.value.weeklyDigestEmail}
+                          // Always send the zone the calendar is showing right now, so the
+                          // digest's times match what this person sees on the site.
+                          onChange={() => notifications.update((prev) => ({ weeklyDigestEmail: !prev.weeklyDigestEmail, timeZone }))}
+                        />
                       </label>
-                    ))}
-                  </div>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -176,17 +168,15 @@ export default function AccountOverlay({ session, promotions, events, onSignOut 
                 <div className="account-overlay-panel">
                   <h2 className="account-overlay-panel-title">{t("account.trackedPromotions")}</h2>
                   <p className="account-overlay-hint">{t("account.trackedPromotionsHint")}</p>
-                  {trackedStatus === "loading" && <p className="account-overlay-empty">{t("app.loading")}</p>}
-                  {trackedStatus === "loadFailed" && <p className="account-overlay-error">{t("account.loadFailed")}</p>}
-                  {trackedStatus === "saveFailed" && <p className="account-overlay-error">{t("account.saveFailed")}</p>}
-                  {trackedStatus !== "loading" && trackedStatus !== "loadFailed" && (
+                  {statusMessage(tracked.status)}
+                  {tracked.status !== "loading" && tracked.status !== "loadFailed" && (
                     <div className="account-overlay-list">
                       <PromotionTree
                         promotions={promotions}
                         events={events}
-                        selectedKeys={tracked}
-                        onToggle={(key) => editTracked(() => toggleTracked(key))}
-                        onSetMany={(keys, selected) => editTracked(() => setManyTracked(keys, selected))}
+                        selectedKeys={tracked.value}
+                        onToggle={(key) => tracked.update((prev) => toggleIn(prev, key))}
+                        onSetMany={(keys, selected) => tracked.update((prev) => setManyIn(prev, keys, selected))}
                       />
                     </div>
                   )}

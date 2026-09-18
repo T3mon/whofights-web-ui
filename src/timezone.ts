@@ -60,10 +60,15 @@ export function useTimezoneSetting(): string {
   return useSyncExternalStore(subscribe, getSetting);
 }
 
-/** The zone to actually format in, with "auto" already resolved. */
+/** The zone to actually format in, with "auto" already resolved - for code outside render (callbacks, effects). */
+export function getTimezone(): string {
+  return setting === AUTO_TIMEZONE ? getDeviceTimezone() : setting;
+}
+
+/** Same as getTimezone, subscribed so a component re-renders when the setting changes. */
 export function useTimezone(): string {
-  const current = useSyncExternalStore(subscribe, getSetting);
-  return current === AUTO_TIMEZONE ? getDeviceTimezone() : current;
+  useSyncExternalStore(subscribe, getSetting);
+  return getTimezone();
 }
 
 export function getSupportedTimezones(): string[] {

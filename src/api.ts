@@ -1,14 +1,22 @@
 import { addYears, subYears } from "date-fns";
-import type { EventDetail, EventListItem, Promotion, PromotionFollows } from "./types";
+import type { EventDetail, EventListItem, NotificationPreferences, Promotion, PromotionFollows } from "./types";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5080";
 
-async function requestJson<T>(path: string, init?: RequestInit): Promise<T> {
+async function request(path: string, init?: RequestInit): Promise<Response> {
   const response = await fetch(`${API_BASE_URL}${path}`, init);
   if (!response.ok) {
     throw new Error(`${path} returned ${response.status}`);
   }
-  return response.json() as Promise<T>;
+  return response;
+}
+
+async function requestJson<T>(path: string, init?: RequestInit): Promise<T> {
+  return (await request(path, init)).json() as Promise<T>;
+}
+
+function jsonBody(body: unknown): RequestInit & { headers: Record<string, string> } {
+  return { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) };
 }
 
 // Signed-in calls carry the session token minted by WhoFights.Auth; the API
@@ -46,11 +54,21 @@ export async function fetchFollows(token: string): Promise<string[]> {
 export async function saveFollows(token: string, promotionKeys: string[]): Promise<string[]> {
   const result = await requestJson<PromotionFollows>(
     "/api/me/follows",
-    withBearer(token, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ promotionKeys } satisfies PromotionFollows),
-    }),
+    withBearer(token, jsonBody({ promotionKeys } satisfies PromotionFollows)),
   );
   return result.promotionKeys;
+}
+
+export function fetchNotificationPreferences(token: string): Promise<NotificationPreferences> {
+  return requestJson<NotificationPreferences>("/api/me/notifications", withBearer(token));
+}
+
+export function saveNotificationPreferences(token: string, prefs: NotificationPreferences): Promise<NotificationPreferences> {
+  return requestJson<NotificationPreferences>("/api/me/notifications", withBearer(token, jsonBody(prefs)));
+}
+
+// No session: this is what the Unsubscribe link in the digest email hits,
+// identified by the token in the link alone.
+export async function unsubscribeFromDigest(token: string): Promise<void> {
+  await request(`/api/notifications/unsubscribe?token=${encodeURIComponent(token)}`, { method: "POST" });
 }

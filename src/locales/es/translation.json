@@ -36,6 +36,8 @@
     "ariaLabel": "Configuración de la cuenta",
     "close": "Cerrar",
     "notifications": "Notificaciones",
+    "weeklyDigest": "Resumen semanal por correo",
+    "weeklyDigestHint": "Cada lunes: los eventos de la próxima semana de las promotoras que sigues, con horarios en {{zone}}.",
     "favoriteFighters": "Luchadores favoritos",
     "trackedPromotions": "Promotoras seguidas",
     "trackedPromotionsHint": "Las notificaciones solo cubren las promotoras que sigues aquí.",
@@ -44,10 +46,7 @@
     "comingSoon": "Próximamente",
     "searchFightersPlaceholder": "Buscar luchadores…",
     "noFavoritesYet": "Aún no hay favoritos.",
-    "signOut": "Cerrar sesión",
-    "notificationNewEvents": "Nuevos eventos añadidos",
-    "notificationCardUpdates": "Actualizaciones de la cartelera",
-    "notificationStartingSoon": "El evento está por comenzar"
+    "signOut": "Cerrar sesión"
   },
   "search": {
     "ariaLabel": "Buscar eventos",
@@ -98,7 +97,15 @@
     "confirming": "Confirmando tu correo…",
     "success": "Tu correo está confirmado. Iniciando sesión…",
     "error": "Este enlace de confirmación no es válido o ha caducado.",
-    "invalidLink": "A este enlace de confirmación le falta información.",
+    "invalidLink": "A este enlace de confirmación le falta información."
+  },
+  "page": {
     "backToApp": "Volver a WhoFights"
+  },
+  "unsubscribe": {
+    "working": "Cancelando la suscripción…",
+    "success": "Listo: ya no recibirás el resumen semanal. Puedes volver a activarlo en la configuración de tu cuenta.",
+    "error": "No se pudo cancelar la suscripción. Inténtalo más tarde o desactiva el resumen en la configuración de tu cuenta.",
+    "invalidLink": "A este enlace de baja le falta información."
   }
 }

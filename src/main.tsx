@@ -1,9 +1,10 @@
-import { StrictMode } from 'react'
+import { type ComponentType, StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import './i18n.ts'
 import App from './App.tsx'
 import ConfirmEmailPage from './ConfirmEmailPage.tsx'
+import UnsubscribePage from './UnsubscribePage.tsx'
 import { faviconHref } from './envTheme.ts'
 import { applyTheme, getInitialTheme } from './theme.ts'
 
@@ -17,10 +18,18 @@ if (faviconLink) {
 // anyone who has actually chosen (or whose OS prefers) light.
 applyTheme(getInitialTheme())
 
-// One static extra route doesn't earn a router dependency - the whole app
-// is one page plus this one link target from the confirmation email.
-const page = window.location.pathname === '/confirm-email' ? <ConfirmEmailPage /> : <App />
+// Two static link-target routes (from the confirmation and digest emails)
+// don't earn a router dependency - the whole app is otherwise one page.
+// Event deep links (/e/{slug}) are handled inside App, since they need
+// the calendar itself.
+const STANDALONE_PAGES: Record<string, ComponentType> = {
+  '/confirm-email': ConfirmEmailPage,
+  '/unsubscribe': UnsubscribePage,
+}
+const Page = STANDALONE_PAGES[window.location.pathname] ?? App
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>{page}</StrictMode>,
+  <StrictMode>
+    <Page />
+  </StrictMode>,
 )

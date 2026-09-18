@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import "./ConfirmEmailPage.css";
 import { confirmEmail } from "./auth";
-import Wordmark from "./Wordmark";
+import StandalonePage from "./StandalonePage";
 
 type Status = "confirming" | "success" | "error" | "missing-params";
 
@@ -15,8 +14,7 @@ function getParams(): { userId: string; token: string } | null {
   return userId && token ? { userId, token } : null;
 }
 
-// Not part of the main calendar tree - main.tsx renders this standalone for
-// the /confirm-email route the link in the confirmation email points to.
+// The /confirm-email route the link in the confirmation email points to.
 export default function ConfirmEmailPage() {
   const { t } = useTranslation();
   const [params] = useState(getParams);
@@ -39,21 +37,11 @@ export default function ConfirmEmailPage() {
   }, [params]);
 
   return (
-    <div className="confirm-email-page">
-      <div className="confirm-email-card">
-        <h1 className="confirm-email-title">
-          <Wordmark />
-        </h1>
-
-        {status === "confirming" && <p className="confirm-email-message">{t("confirmEmail.confirming")}</p>}
-        {status === "success" && <p className="confirm-email-message">{t("confirmEmail.success")}</p>}
-        {status === "error" && <p className="confirm-email-message confirm-email-error">{error ?? t("confirmEmail.error")}</p>}
-        {status === "missing-params" && <p className="confirm-email-message confirm-email-error">{t("confirmEmail.invalidLink")}</p>}
-
-        <a className="confirm-email-back" href="/">
-          {t("confirmEmail.backToApp")}
-        </a>
-      </div>
-    </div>
+    <StandalonePage>
+      {status === "confirming" && <p className="standalone-message">{t("confirmEmail.confirming")}</p>}
+      {status === "success" && <p className="standalone-message">{t("confirmEmail.success")}</p>}
+      {status === "error" && <p className="standalone-message standalone-error">{error ?? t("confirmEmail.error")}</p>}
+      {status === "missing-params" && <p className="standalone-message standalone-error">{t("confirmEmail.invalidLink")}</p>}
+    </StandalonePage>
   );
 }

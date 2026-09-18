@@ -1,4 +1,4 @@
-.confirm-email-page {
+.standalone-page {
   min-height: 100vh;
   min-height: 100dvh;
   display: flex;
@@ -9,7 +9,7 @@
   box-sizing: border-box;
 }
 
-.confirm-email-card {
+.standalone-card {
   width: min(400px, 100%);
   background: var(--bg-surface);
   border: 1px solid var(--border-strong);
@@ -19,23 +19,23 @@
   text-align: center;
 }
 
-.confirm-email-title {
+.standalone-title {
   font-size: 22px;
   margin: 0 0 20px;
 }
 
-.confirm-email-message {
+.standalone-message {
   font-size: 15px;
   color: var(--text-body);
   line-height: 1.5;
   margin: 0 0 20px;
 }
 
-.confirm-email-error {
+.standalone-error {
   color: var(--danger);
 }
 
-.confirm-email-back {
+.standalone-back {
   display: inline-block;
   color: var(--accent-light);
   font-size: 14px;
@@ -43,6 +43,6 @@
   text-decoration: none;
 }
 
-.confirm-email-back:hover {
+.standalone-back:hover {
   text-decoration: underline;
 }

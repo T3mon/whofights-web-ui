@@ -22,7 +22,7 @@ import { computeSubSeriesByPromotion, filterKeyForEvent, leafKeysForPromotion } 
 import { loadDeselectedKeys, saveDeselectedKeys } from "./filterStorage";
 import { useKeySet } from "./useKeySet";
 import { getDateLocale } from "./dateLocale";
-import { dayKeyInZone, useTimezone, zonedDate } from "./timezone";
+import { dayKeyInZone, getTimezone, useTimezone, zonedDate } from "./timezone";
 import type { EventListItem, Promotion } from "./types";
 
 function formatViewLabel(mode: ViewMode, viewDate: Date, locale: Locale): string {
@@ -34,6 +34,28 @@ function formatViewLabel(mode: ViewMode, viewDate: Date, locale: Locale): string
   return first.getFullYear() === last.getFullYear()
     ? `${format(first, "MMM", { locale })} – ${format(last, "MMM yyyy", { locale })}`
     : `${format(first, "MMM yyyy", { locale })} – ${format(last, "MMM yyyy", { locale })}`;
+}
+
+// Reads an /e/{slug} deep link once and scrubs it from the URL, so a reload
+// shows the plain calendar rather than re-jumping.
+function deepLinkedSlug(): string | null {
+  const match = /^\/e\/([^/]+)$/.exec(window.location.pathname);
+  if (!match) return null;
+  window.history.replaceState(null, "", "/");
+  return decodeURIComponent(match[1]);
+}
+
+// Where the calendar has to go to show one event: the filter key that makes
+// it visible, and the month and day to open. Zone-aware so the day we open
+// matches the square the calendar put the event on - a late-night card can
+// sit on a different date per zone.
+function locateEvent(event: EventListItem, subSeries: Map<string, Set<string | null>>, timeZone: string) {
+  const date = zonedDate(event.startsAt, timeZone);
+  return {
+    key: filterKeyForEvent(event, subSeries),
+    month: new Date(date.getFullYear(), date.getMonth(), date.getDate()),
+    dayKey: dayKeyInZone(event.startsAt, timeZone),
+  };
 }
 
 function App() {
@@ -62,6 +84,19 @@ function App() {
         const deselected = loadDeselectedKeys();
         setSelectedKeys(new Set(allKeys.filter((key) => !deselected.has(key))));
         setEvents(eventsResult);
+
+        // /e/{slug} - the link every event in the digest email carries. Same
+        // as jumpToEvent below, done here because the calendar state it needs
+        // is only just arriving (and so the fetch effect stays dependency-free).
+        const slug = deepLinkedSlug();
+        const linked = slug && eventsResult.find((e) => e.slug === slug);
+        if (linked) {
+          const target = locateEvent(linked, subSeriesByPromotion, getTimezone());
+          setSelectedKeys((prev) => new Set(prev).add(target.key));
+          setViewMode("month");
+          setViewDate(target.month);
+          setSelectedDay(target.dayKey);
+        }
       })
       .catch((err: Error) => setError(err.message))
       .finally(() => setLoading(false));
@@ -73,14 +108,11 @@ function App() {
   // currently shows - jumping to a result should never come up empty
   // just because its promotion happened to be unchecked.
   function jumpToEvent(event: EventListItem) {
-    const key = filterKeyForEvent(event, subSeriesByPromotion);
-    setSelectedKeys((prev) => (prev.has(key) ? prev : new Set(prev).add(key)));
-    // Zone-aware so the day we open matches the square the calendar put the
-    // event on - a late-night card can sit on a different date per zone.
-    const date = zonedDate(event.startsAt, timeZone);
+    const target = locateEvent(event, subSeriesByPromotion, timeZone);
+    setSelectedKeys((prev) => (prev.has(target.key) ? prev : new Set(prev).add(target.key)));
     setViewMode("month");
-    setViewDate(new Date(date.getFullYear(), date.getMonth(), date.getDate()));
-    setSelectedDay(dayKeyInZone(event.startsAt, timeZone));
+    setViewDate(target.month);
+    setSelectedDay(target.dayKey);
   }
 
   // Persist only the user's explicit unchecks (see filterStorage.ts) once
