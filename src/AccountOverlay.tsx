@@ -1,15 +1,23 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import "./AccountOverlay.css";
+import { fetchFollows, saveFollows } from "./api";
 import type { Session } from "./auth";
-import { colorForPromotion } from "./promotionColors";
-import type { Promotion } from "./types";
+import PromotionTree from "./PromotionTree";
+import type { EventListItem, Promotion } from "./types";
+import { useKeySet } from "./useKeySet";
 
 interface AccountOverlayProps {
   session: Session;
   promotions: Promotion[];
+  events: EventListItem[];
   onSignOut: () => void;
 }
+
+// Coalesces a burst of checkbox clicks into one PUT. Also keeps saves in
+// order: each PUT replaces the whole list, so two in flight at once could
+// land newest-first and leave the server holding the stale one.
+const SAVE_DEBOUNCE_MS = 400;
 
 type Section = "notifications" | "fighters" | "promotions";
 
@@ -24,11 +32,10 @@ const NOTIFICATION_KEYS = ["new-events", "card-updates", "starting-soon"] as con
 // in this overlay is genuinely per-account, so it stays gated behind
 // having a session.
 //
-// Design/UX placeholder only - nothing here persists anywhere yet.
-// TODO: notifications/favorites/promotions need JWT-bearer auth wired into
-// WhoFights.Api plus endpoints extending UserFollow and a new
-// favorite-fighters table before any of it saves.
-export default function AccountOverlay({ session, promotions, onSignOut }: AccountOverlayProps) {
+// Tracked promotions persist through /api/me/follows. Notifications and
+// favorite fighters are still design placeholders.
+// TODO: favorites need a favorite-fighters table before they can save.
+export default function AccountOverlay({ session, promotions, events, onSignOut }: AccountOverlayProps) {
   const { t } = useTranslation();
   const NAV_ITEMS: { key: Section; label: string }[] = [
     { key: "notifications", label: t("account.notifications") },
@@ -42,27 +49,46 @@ export default function AccountOverlay({ session, promotions, onSignOut }: Accou
   };
   const [open, setOpen] = useState(false);
   const [section, setSection] = useState<Section>("notifications");
-  const [notifications, setNotifications] = useState<Set<string>>(new Set(["new-events"]));
-  const [trackedPromotions, setTrackedPromotions] = useState<Set<number>>(new Set());
+  const { keys: notifications, toggle: toggleNotification } = useKeySet(() => new Set(["new-events"]));
   const [fighterSearch, setFighterSearch] = useState("");
   const initial = session.email.charAt(0).toUpperCase();
 
-  function toggleNotification(key: string) {
-    setNotifications((prev) => {
-      const next = new Set(prev);
-      if (next.has(key)) next.delete(key);
-      else next.add(key);
-      return next;
-    });
-  }
+  const { keys: tracked, setKeys: setTracked, toggle: toggleTracked, setMany: setManyTracked } = useKeySet(() => new Set());
+  const [trackedStatus, setTrackedStatus] = useState<"loading" | "ready" | "loadFailed" | "saveFailed">("loading");
+  // Flipped by the user's own edits only - the initial load must not
+  // trigger a save of what the server just told us.
+  const dirty = useRef(false);
 
-  function togglePromotion(id: number) {
-    setTrackedPromotions((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
+  useEffect(() => {
+    if (!open || trackedStatus !== "loading") return;
+    let cancelled = false;
+    fetchFollows(session.token)
+      .then((keys) => {
+        if (cancelled) return;
+        setTracked(new Set(keys));
+        setTrackedStatus("ready");
+      })
+      .catch(() => {
+        if (!cancelled) setTrackedStatus("loadFailed");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [open, trackedStatus, session.token, setTracked]);
+
+  useEffect(() => {
+    if (!dirty.current) return;
+    const handle = setTimeout(() => {
+      dirty.current = false;
+      saveFollows(session.token, [...tracked]).catch(() => setTrackedStatus("saveFailed"));
+    }, SAVE_DEBOUNCE_MS);
+    return () => clearTimeout(handle);
+  }, [tracked, session.token]);
+
+  function editTracked(edit: () => void) {
+    dirty.current = true;
+    setTrackedStatus("ready");
+    edit();
   }
 
   return (
@@ -148,24 +174,22 @@ export default function AccountOverlay({ session, promotions, onSignOut }: Accou
 
               {section === "promotions" && (
                 <div className="account-overlay-panel">
-                  <h2 className="account-overlay-panel-title">
-                    {t("account.trackedPromotions")} <span className="account-overlay-badge">{t("account.comingSoon")}</span>
-                  </h2>
-                  <div className="account-overlay-list">
-                    {promotions.map((promotion) => (
-                      <label className="account-overlay-toggle-row" key={promotion.id}>
-                        <span className="account-overlay-promotion-label">
-                          <span className="account-overlay-dot" style={{ backgroundColor: colorForPromotion(promotion.code) }} />
-                          {promotion.name}
-                        </span>
-                        <input
-                          type="checkbox"
-                          checked={trackedPromotions.has(promotion.id)}
-                          onChange={() => togglePromotion(promotion.id)}
-                        />
-                      </label>
-                    ))}
-                  </div>
+                  <h2 className="account-overlay-panel-title">{t("account.trackedPromotions")}</h2>
+                  <p className="account-overlay-hint">{t("account.trackedPromotionsHint")}</p>
+                  {trackedStatus === "loading" && <p className="account-overlay-empty">{t("app.loading")}</p>}
+                  {trackedStatus === "loadFailed" && <p className="account-overlay-error">{t("account.loadFailed")}</p>}
+                  {trackedStatus === "saveFailed" && <p className="account-overlay-error">{t("account.saveFailed")}</p>}
+                  {trackedStatus !== "loading" && trackedStatus !== "loadFailed" && (
+                    <div className="account-overlay-list">
+                      <PromotionTree
+                        promotions={promotions}
+                        events={events}
+                        selectedKeys={tracked}
+                        onToggle={(key) => editTracked(() => toggleTracked(key))}
+                        onSetMany={(keys, selected) => editTracked(() => setManyTracked(keys, selected))}
+                      />
+                    </div>
+                  )}
                 </div>
               )}
             </div>

@@ -20,6 +20,7 @@ import { clearSession, loadSession, type Session } from "./auth";
 import { getVisibleRange, isViewingToday, monthsInView, shiftViewDate, type ViewMode } from "./calendarView";
 import { computeSubSeriesByPromotion, filterKeyForEvent, leafKeysForPromotion } from "./eventSeries";
 import { loadDeselectedKeys, saveDeselectedKeys } from "./filterStorage";
+import { useKeySet } from "./useKeySet";
 import { getDateLocale } from "./dateLocale";
 import { dayKeyInZone, useTimezone, zonedDate } from "./timezone";
 import type { EventListItem, Promotion } from "./types";
@@ -41,7 +42,7 @@ function App() {
   const timeZone = useTimezone();
   const [promotions, setPromotions] = useState<Promotion[]>([]);
   const [events, setEvents] = useState<EventListItem[]>([]);
-  const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set());
+  const { keys: selectedKeys, setKeys: setSelectedKeys, toggle: toggleKey, setMany: setManyKeys } = useKeySet(() => new Set());
   // Full year's 12-up grid is unreadable on a phone screen, so start narrow
   // viewports on month view instead - the dropdown still lets anyone switch.
   const [viewMode, setViewMode] = useState<ViewMode>(() => (window.innerWidth < 768 ? "month" : "year"));
@@ -64,33 +65,7 @@ function App() {
       })
       .catch((err: Error) => setError(err.message))
       .finally(() => setLoading(false));
-  }, []);
-
-  function toggleKey(key: string) {
-    setSelectedKeys((prev) => {
-      const next = new Set(prev);
-      if (next.has(key)) {
-        next.delete(key);
-      } else {
-        next.add(key);
-      }
-      return next;
-    });
-  }
-
-  function setManyKeys(keys: string[], selected: boolean) {
-    setSelectedKeys((prev) => {
-      const next = new Set(prev);
-      for (const key of keys) {
-        if (selected) {
-          next.add(key);
-        } else {
-          next.delete(key);
-        }
-      }
-      return next;
-    });
-  }
+  }, [setSelectedKeys]);
 
   const subSeriesByPromotion = useMemo(() => computeSubSeriesByPromotion(events), [events]);
 
@@ -199,6 +174,7 @@ function App() {
             <AccountOverlay
               session={session}
               promotions={promotions}
+              events={events}
               onSignOut={() => {
                 clearSession();
                 setSession(null);

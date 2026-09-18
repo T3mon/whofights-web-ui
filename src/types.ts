@@ -6,6 +6,12 @@ export interface Promotion {
   name: string;
 }
 
+// From GET/PUT /api/me/follows. Keys are the same filter keys the promotion
+// tree uses (see eventSeries.ts filterKey).
+export interface PromotionFollows {
+  promotionKeys: string[];
+}
+
 export interface Bout {
   fighterA: string;
   fighterALink: string;
