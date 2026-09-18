@@ -18,6 +18,8 @@ export interface NotificationPreferences {
   // IANA zone the Monday digest renders times in - the calendar sends
   // whatever zone it is currently showing.
   timeZone: string;
+  // Language the digest is written in - the calendar's current UI language.
+  language: string;
 }
 
 export interface Bout {

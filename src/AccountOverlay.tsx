@@ -29,7 +29,7 @@ function sectionFromUrl(): Section | null {
   return wanted as Section;
 }
 
-const NO_NOTIFICATIONS: NotificationPreferences = { weeklyDigestEmail: false, timeZone: "UTC" };
+const NO_NOTIFICATIONS: NotificationPreferences = { weeklyDigestEmail: false, timeZone: "UTC", language: "en" };
 
 // Concept 3: no dropdown step at all - clicking the trigger goes straight
 // into one large settings-page-style overlay with a left sub-nav, the way
@@ -44,8 +44,11 @@ const NO_NOTIFICATIONS: NotificationPreferences = { weeklyDigestEmail: false, ti
 // Favorite fighters are still a design placeholder.
 // TODO: favorites need a favorite-fighters table before they can save.
 export default function AccountOverlay({ session, promotions, events, onSignOut }: AccountOverlayProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const timeZone = useTimezone();
+  // resolvedLanguage is the base code the strings actually come from ("en"
+  // for an "en-US" browser) - the same code the digest's translations use.
+  const language = i18n.resolvedLanguage ?? i18n.language;
   const NAV_ITEMS: { key: Section; label: string }[] = [
     { key: "notifications", label: t("account.notifications") },
     { key: "fighters", label: t("account.favoriteFighters") },
@@ -138,9 +141,9 @@ export default function AccountOverlay({ session, promotions, events, onSignOut 
                           type="checkbox"
                           className="promotion-checkbox"
                           checked={notifications.value.weeklyDigestEmail}
-                          // Always send the zone the calendar is showing right now, so the
-                          // digest's times match what this person sees on the site.
-                          onChange={() => notifications.update((prev) => ({ weeklyDigestEmail: !prev.weeklyDigestEmail, timeZone }))}
+                          // Always send the zone and language the calendar is using right now,
+                          // so the digest reads the way the site does for this person.
+                          onChange={() => notifications.update((prev) => ({ weeklyDigestEmail: !prev.weeklyDigestEmail, timeZone, language }))}
                         />
                       </label>
                     </div>
