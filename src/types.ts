@@ -12,14 +12,29 @@ export interface PromotionFollows {
   promotionKeys: string[];
 }
 
-// From GET/PUT /api/me/notifications.
-export interface NotificationPreferences {
-  weeklyDigestEmail: boolean;
-  // IANA zone the Monday digest renders times in - the calendar sends
-  // whatever zone it is currently showing.
+// From GET/PUT /api/me/notifications. Mirrors NotificationKind /
+// NotificationChannel in WhoFights.Data (camelCase over the wire).
+export const NOTIFICATION_KINDS = ["weeklyDigest", "reminder24h", "reminder1h"] as const;
+export const NOTIFICATION_CHANNELS = ["email", "telegram"] as const;
+export type NotificationKind = (typeof NOTIFICATION_KINDS)[number];
+export type NotificationChannel = (typeof NOTIFICATION_CHANNELS)[number];
+
+// One switched-on cell of the notifications grid.
+export interface NotificationCell {
+  kind: NotificationKind;
+  channel: NotificationChannel;
+}
+
+export interface NotificationSettings {
+  // IANA zone notifications pick their moment and show times in - the
+  // calendar sends whatever zone it is currently showing.
   timeZone: string;
-  // Language the digest is written in - the calendar's current UI language.
+  // Language notifications are written in - the calendar's current UI language.
   language: string;
+  subscriptions: NotificationCell[];
+  // Read-only, from the server: the cells that can be switched on today.
+  // Everything else renders locked. Omitted when sending.
+  available?: NotificationCell[];
 }
 
 export interface Bout {

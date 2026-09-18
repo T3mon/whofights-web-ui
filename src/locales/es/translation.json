@@ -36,8 +36,22 @@
     "ariaLabel": "Configuración de la cuenta",
     "close": "Cerrar",
     "notifications": "Notificaciones",
-    "weeklyDigest": "Resumen semanal por correo",
-    "weeklyDigestHint": "Cada lunes: los eventos de la próxima semana de las promotoras que sigues, con horarios en {{zone}}.",
+    "notificationsHint": "Horarios en {{zone}}. El resumen semanal llega el lunes por la mañana; los recordatorios, poco antes de un evento.",
+    "cellAria": "{{kind}} por {{channel}}",
+    "channel": {
+      "email": "Correo",
+      "telegram": "Telegram"
+    },
+    "kind": {
+      "weeklyDigest": "Resumen semanal",
+      "reminder24h": "24 horas antes de un evento",
+      "reminder1h": "1 hora antes de la pelea"
+    },
+    "kindHint": {
+      "weeklyDigest": "Los eventos de la próxima semana de las promotoras que sigues.",
+      "reminder24h": "Tiempo para ajustar tus planes.",
+      "reminder1h": "No te pierdas la transmisión."
+    },
     "favoriteFighters": "Luchadores favoritos",
     "trackedPromotions": "Promotoras seguidas",
     "trackedPromotionsHint": "Las notificaciones solo cubren las promotoras que sigues aquí.",

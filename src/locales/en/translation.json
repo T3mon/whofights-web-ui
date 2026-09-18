@@ -36,8 +36,22 @@
     "ariaLabel": "Account settings",
     "close": "Close",
     "notifications": "Notifications",
-    "weeklyDigest": "Weekly email digest",
-    "weeklyDigestHint": "Every Monday: the coming week’s events from the promotions you track, with times in {{zone}}.",
+    "notificationsHint": "Times in {{zone}}. The weekly outlook arrives Monday morning; reminders arrive shortly before an event.",
+    "cellAria": "{{kind}} via {{channel}}",
+    "channel": {
+      "email": "Email",
+      "telegram": "Telegram"
+    },
+    "kind": {
+      "weeklyDigest": "Weekly outlook",
+      "reminder24h": "24 hours before an event",
+      "reminder1h": "1 hour before the fight"
+    },
+    "kindHint": {
+      "weeklyDigest": "The coming week's events from the promotions you track.",
+      "reminder24h": "Time to adjust your plans.",
+      "reminder1h": "Don't miss the stream."
+    },
     "favoriteFighters": "Favorite Fighters",
     "trackedPromotions": "Tracked Promotions",
     "trackedPromotionsHint": "Notifications only cover the promotions you track here.",

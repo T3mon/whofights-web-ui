@@ -36,8 +36,22 @@
     "ariaLabel": "账户设置",
     "close": "关闭",
     "notifications": "通知",
-    "weeklyDigest": "每周邮件摘要",
-    "weeklyDigestHint": "每周一：你关注的赛事组织在未来一周的赛事，时间按 {{zone}} 显示。",
+    "notificationsHint": "时间按 {{zone}} 显示。每周速览在周一早上送达；提醒在赛事开始前不久送达。",
+    "cellAria": "通过{{channel}}接收{{kind}}",
+    "channel": {
+      "email": "邮件",
+      "telegram": "Telegram"
+    },
+    "kind": {
+      "weeklyDigest": "每周赛事速览",
+      "reminder24h": "赛事开始前 24 小时",
+      "reminder1h": "比赛开始前 1 小时"
+    },
+    "kindHint": {
+      "weeklyDigest": "你关注的赛事组织在未来一周的赛事。",
+      "reminder24h": "留出时间调整安排。",
+      "reminder1h": "别错过直播。"
+    },
     "favoriteFighters": "收藏选手",
     "trackedPromotions": "关注的推广方",
     "trackedPromotionsHint": "通知仅涵盖你在此关注的赛事组织。",

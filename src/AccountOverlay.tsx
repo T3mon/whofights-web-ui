@@ -1,11 +1,11 @@
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import "./AccountOverlay.css";
-import { fetchFollows, fetchNotificationPreferences, saveFollows, saveNotificationPreferences } from "./api";
+import { fetchFollows, fetchNotificationSettings, saveFollows, saveNotificationSettings } from "./api";
 import type { Session } from "./auth";
 import PromotionTree from "./PromotionTree";
 import { useTimezone } from "./timezone";
-import type { EventListItem, NotificationPreferences, Promotion } from "./types";
+import { NOTIFICATION_CHANNELS, NOTIFICATION_KINDS, type EventListItem, type NotificationCell, type NotificationSettings, type Promotion } from "./types";
 import { setManyIn, toggleIn } from "./useKeySet";
 import { type RemoteStatus, useRemoteSetting } from "./useRemoteSetting";
 
@@ -29,7 +29,9 @@ function sectionFromUrl(): Section | null {
   return wanted as Section;
 }
 
-const NO_NOTIFICATIONS: NotificationPreferences = { weeklyDigestEmail: false, timeZone: "UTC", language: "en" };
+const NO_NOTIFICATIONS: NotificationSettings = { timeZone: "UTC", language: "en", subscriptions: [], available: [] };
+
+const sameCell = (a: NotificationCell, b: NotificationCell) => a.kind === b.kind && a.channel === b.channel;
 
 // Concept 3: no dropdown step at all - clicking the trigger goes straight
 // into one large settings-page-style overlay with a left sub-nav, the way
@@ -65,9 +67,23 @@ export default function AccountOverlay({ session, promotions, events, onSignOut 
   const saveTracked = useCallback((keys: Set<string>) => saveFollows(token, [...keys]), [token]);
   const tracked = useRemoteSetting(open, new Set<string>(), loadTracked, saveTracked);
 
-  const loadNotifications = useCallback(() => fetchNotificationPreferences(token), [token]);
-  const saveNotifications = useCallback((prefs: NotificationPreferences) => saveNotificationPreferences(token, prefs), [token]);
+  const loadNotifications = useCallback(() => fetchNotificationSettings(token), [token]);
+  const saveNotifications = useCallback((settings: NotificationSettings) => saveNotificationSettings(token, settings), [token]);
   const notifications = useRemoteSetting(open, NO_NOTIFICATIONS, loadNotifications, saveNotifications);
+
+  // Flip one cell of the grid. Always send the zone and language the
+  // calendar is using right now, so notifications read the way the site
+  // does for this person.
+  function toggleCell(cell: NotificationCell) {
+    notifications.update((prev) => ({
+      ...prev,
+      timeZone,
+      language,
+      subscriptions: prev.subscriptions.some((c) => sameCell(c, cell))
+        ? prev.subscriptions.filter((c) => !sameCell(c, cell))
+        : [...prev.subscriptions, cell],
+    }));
+  }
 
   // The load/error lines both panels show above their content.
   function statusMessage(status: RemoteStatus) {
@@ -129,24 +145,52 @@ export default function AccountOverlay({ session, promotions, events, onSignOut 
               {section === "notifications" && (
                 <div className="account-overlay-panel">
                   <h2 className="account-overlay-panel-title">{t("account.notifications")}</h2>
+                  <p className="account-overlay-hint">{t("account.notificationsHint", { zone: timeZone })}</p>
                   {statusMessage(notifications.status)}
                   {notifications.status !== "loading" && notifications.status !== "loadFailed" && (
-                    <div className="account-overlay-list">
-                      <label className="account-overlay-toggle-row">
-                        <span>
-                          <span className="account-overlay-toggle-label">{t("account.weeklyDigest")}</span>
-                          <span className="account-overlay-toggle-hint">{t("account.weeklyDigestHint", { zone: timeZone })}</span>
-                        </span>
-                        <input
-                          type="checkbox"
-                          className="promotion-checkbox"
-                          checked={notifications.value.weeklyDigestEmail}
-                          // Always send the zone and language the calendar is using right now,
-                          // so the digest reads the way the site does for this person.
-                          onChange={() => notifications.update((prev) => ({ weeklyDigestEmail: !prev.weeklyDigestEmail, timeZone, language }))}
-                        />
-                      </label>
-                    </div>
+                    <table className="notification-grid">
+                      <thead>
+                        <tr>
+                          <th />
+                          {NOTIFICATION_CHANNELS.map((channel) => (
+                            <th key={channel} scope="col">
+                              {t(`account.channel.${channel}`)}
+                              {!notifications.value.available?.some((c) => c.channel === channel) && (
+                                <span className="account-overlay-badge">{t("account.comingSoon")}</span>
+                              )}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {NOTIFICATION_KINDS.map((kind) => (
+                          <tr key={kind}>
+                            <th scope="row">
+                              <span className="account-overlay-toggle-label">{t(`account.kind.${kind}`)}</span>
+                              <span className="account-overlay-toggle-hint">{t(`account.kindHint.${kind}`)}</span>
+                            </th>
+                            {NOTIFICATION_CHANNELS.map((channel) => {
+                              const cell = { kind, channel };
+                              // The server says which cells exist today; the rest stay locked
+                              // (email can't carry reminders, Telegram isn't built yet).
+                              const enabled = notifications.value.available?.some((c) => sameCell(c, cell)) ?? false;
+                              return (
+                                <td key={channel}>
+                                  <input
+                                    type="checkbox"
+                                    className="promotion-checkbox"
+                                    aria-label={t("account.cellAria", { kind: t(`account.kind.${kind}`), channel: t(`account.channel.${channel}`) })}
+                                    disabled={!enabled}
+                                    checked={notifications.value.subscriptions.some((c) => sameCell(c, cell))}
+                                    onChange={() => toggleCell(cell)}
+                                  />
+                                </td>
+                              );
+                            })}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   )}
                 </div>
               )}

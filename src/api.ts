@@ -1,5 +1,5 @@
 import { addYears, subYears } from "date-fns";
-import type { EventDetail, EventListItem, NotificationPreferences, Promotion, PromotionFollows } from "./types";
+import type { EventDetail, EventListItem, NotificationSettings, Promotion, PromotionFollows } from "./types";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5080";
 
@@ -59,12 +59,12 @@ export async function saveFollows(token: string, promotionKeys: string[]): Promi
   return result.promotionKeys;
 }
 
-export function fetchNotificationPreferences(token: string): Promise<NotificationPreferences> {
-  return requestJson<NotificationPreferences>("/api/me/notifications", withBearer(token));
+export function fetchNotificationSettings(token: string): Promise<NotificationSettings> {
+  return requestJson<NotificationSettings>("/api/me/notifications", withBearer(token));
 }
 
-export function saveNotificationPreferences(token: string, prefs: NotificationPreferences): Promise<NotificationPreferences> {
-  return requestJson<NotificationPreferences>("/api/me/notifications", withBearer(token, jsonBody(prefs)));
+export function saveNotificationSettings(token: string, settings: NotificationSettings): Promise<NotificationSettings> {
+  return requestJson<NotificationSettings>("/api/me/notifications", withBearer(token, jsonBody(settings)));
 }
 
 // No session: this is what the Unsubscribe link in the digest email hits,

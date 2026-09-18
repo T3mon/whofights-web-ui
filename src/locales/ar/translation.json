@@ -36,8 +36,22 @@
     "ariaLabel": "إعدادات الحساب",
     "close": "إغلاق",
     "notifications": "الإشعارات",
-    "weeklyDigest": "ملخص أسبوعي عبر البريد",
-    "weeklyDigestHint": "كل يوم اثنين: أحداث الأسبوع المقبل من المنظمات التي تتابعها، بتوقيت {{zone}}.",
+    "notificationsHint": "الأوقات بتوقيت {{zone}}. تصل النظرة الأسبوعية صباح الاثنين، والتذكيرات قبل الحدث بقليل.",
+    "cellAria": "{{kind}} عبر {{channel}}",
+    "channel": {
+      "email": "البريد",
+      "telegram": "تيليجرام"
+    },
+    "kind": {
+      "weeklyDigest": "نظرة على الأسبوع",
+      "reminder24h": "قبل الحدث بـ 24 ساعة",
+      "reminder1h": "قبل النزال بساعة"
+    },
+    "kindHint": {
+      "weeklyDigest": "أحداث الأسبوع المقبل من المنظمات التي تتابعها.",
+      "reminder24h": "وقت لتعديل خططك.",
+      "reminder1h": "لا تفوّت البث."
+    },
     "favoriteFighters": "المقاتلون المفضلون",
     "trackedPromotions": "الجهات المنظمة المتابَعة",
     "trackedPromotionsHint": "تغطي الإشعارات فقط المنظمات التي تتابعها هنا.",

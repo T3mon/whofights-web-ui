@@ -168,6 +168,52 @@
   cursor: pointer;
 }
 
+/* Notifications grid: rows are kinds, columns are channels. Same checkbox
+   as the promotion tree; a disabled one is a cell that can't be switched on
+   yet (channel not built, or the channel never carries that kind). */
+.notification-grid {
+  border-collapse: collapse;
+  max-width: 520px;
+}
+
+.notification-grid th,
+.notification-grid td {
+  padding: 10px 6px;
+  text-align: left;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--border);
+}
+
+.notification-grid thead th {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.notification-grid thead th .account-overlay-badge {
+  margin-left: 6px;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.notification-grid tbody th {
+  font-weight: 400;
+  font-size: 14px;
+}
+
+.notification-grid td {
+  width: 96px;
+  text-align: center;
+}
+
+.notification-grid .promotion-checkbox:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
 .account-overlay-toggle-label {
   display: block;
   font-weight: 600;
