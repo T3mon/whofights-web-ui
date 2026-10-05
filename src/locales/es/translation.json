@@ -117,6 +117,8 @@
     "topRated": "Mejor valorado",
     "sourceCredit": "Fuente",
     "loadFailed": "No se pudieron cargar los rankings. Inténtalo más tarde.",
-    "empty": "Todavía no hay rankings."
+    "empty": "Todavía no hay rankings.",
+    "showAll": "Ver los {{count}}",
+    "showTop": "Ver el top {{count}}"
   }
 }

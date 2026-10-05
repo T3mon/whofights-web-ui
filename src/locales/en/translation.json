@@ -117,6 +117,8 @@
     "topRated": "Top rated",
     "sourceCredit": "Source",
     "loadFailed": "Couldn't load the rankings. Try again later.",
-    "empty": "No rankings yet."
+    "empty": "No rankings yet.",
+    "showAll": "Show all {{count}}",
+    "showTop": "Show top {{count}}"
   }
 }

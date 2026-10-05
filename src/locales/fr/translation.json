@@ -117,6 +117,8 @@
     "topRated": "Mieux classé",
     "sourceCredit": "Source",
     "loadFailed": "Impossible de charger les classements. Réessayez plus tard.",
-    "empty": "Aucun classement pour le moment."
+    "empty": "Aucun classement pour le moment.",
+    "showAll": "Afficher les {{count}}",
+    "showTop": "Afficher le top {{count}}"
   }
 }
