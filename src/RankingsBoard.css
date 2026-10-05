@@ -83,8 +83,14 @@ a.rk-belt-holder:hover {
   letter-spacing: 0.04em;
   padding: 2px 5px;
   border-radius: 4px;
-  color: var(--brand-fights);
-  background: color-mix(in srgb, var(--brand-fights) 16%, transparent);
+  color: var(--bg-page);
+  background: var(--brand-fights);
+}
+
+/* Light theme: the gold is darker there, so white reads better on it than
+   the page colour does (4.8:1 vs 4.3:1). */
+:root[data-bs-theme="light"] .rk-belt {
+  color: var(--text-on-accent);
 }
 
 /* Wraps rather than truncates: an undisputed champion's four chips leave
