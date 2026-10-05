@@ -101,8 +101,34 @@
   overflow-y: auto;
 }
 
-.calendar-main {
+.calendar-main,
+.rankings-main {
   overflow-y: auto;
+}
+
+.wordmark-home-link {
+  text-decoration: none;
+}
+
+/* Switches between the calendar and the rankings page - same pill as the
+   settings button next to it. */
+.nav-page-link {
+  display: inline-flex;
+  align-items: center;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 14px;
+  color: var(--text-body);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.nav-page-link:hover {
+  background: var(--bg-surface-hover);
+  color: var(--text-bright);
 }
 
 .sidebar-backdrop {

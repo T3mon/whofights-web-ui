@@ -6,7 +6,9 @@
     "today": "今天",
     "year": "年",
     "quarter": "季度",
-    "month": "月"
+    "month": "月",
+    "rankings": "排名",
+    "calendar": "日历"
   },
   "sidebar": {
     "promotions": "推广方",
@@ -100,5 +102,21 @@
     "error": "此确认链接无效或已过期。",
     "invalidLink": "此确认链接缺少必要信息。",
     "backToApp": "返回 WhoFights"
+  },
+  "rankings": {
+    "title": "排名",
+    "sourceLabel": "要显示的排名",
+    "source": {
+      "ufcMedia": "UFC · 媒体",
+      "ufcMeta": "UFC · Meta",
+      "boxing": "拳击"
+    },
+    "asOf": "截至 {{date}}",
+    "champion": "冠军",
+    "vacant": "空缺",
+    "topRated": "最高评级",
+    "sourceCredit": "来源",
+    "loadFailed": "无法加载排名，请稍后再试。",
+    "empty": "暂无排名。"
   }
 }
