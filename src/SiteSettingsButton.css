@@ -26,17 +26,6 @@
   letter-spacing: 0.02em;
 }
 
-.site-settings-chevron {
-  font-size: 10px;
-  color: var(--text-muted);
-  transition: transform 0.15s ease;
-  line-height: 1;
-}
-
-.site-settings-chevron.open {
-  transform: rotate(180deg);
-}
-
 .site-settings-backdrop {
   position: fixed;
   inset: 0;
@@ -78,86 +67,22 @@
   color: var(--text-secondary);
 }
 
+/* Language and location are shared Dropdowns: full-width rows here, their
+   menu spanning the row. */
+.site-settings-menu {
+  display: block;
+}
+
+.site-settings-menu .dropdown-menu {
+  right: 0;
+}
+
 button.site-settings-row-header,
 label.site-settings-row-header {
   cursor: pointer;
 }
 
-.site-settings-submenu-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 37;
-}
-
-.site-settings-submenu {
-  position: absolute;
-  top: calc(100% + 2px);
-  left: 0;
-  right: 0;
-  display: flex;
-  flex-direction: column;
-  margin: 0;
-  padding: 4px;
-  background: var(--bg-surface-hover);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  box-shadow: 0 8px 24px var(--shadow-sm);
-  z-index: 38;
-  max-height: 260px;
-}
-
 /* Scrolls inside the submenu so the timezone search box stays pinned. */
-.site-settings-submenu-list {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  overflow-y: auto;
-}
-
-.site-settings-submenu-search {
-  flex-shrink: 0;
-  width: 100%;
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  color: var(--text-body);
-  font-size: 13px;
-  padding: 6px 9px;
-  margin-bottom: 4px;
-}
-
-.site-settings-submenu-search:focus {
-  outline: none;
-  border-color: var(--accent);
-}
-
-.site-settings-submenu-empty {
-  font-size: 12px;
-  color: var(--text-muted);
-  padding: 8px 10px;
-}
-
-.site-settings-submenu-option {
-  display: block;
-  width: 100%;
-  text-align: left;
-  background: none;
-  border: none;
-  color: var(--text-body);
-  font-size: 13px;
-  padding: 8px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.site-settings-submenu-option:hover {
-  background: var(--border);
-}
-
-.site-settings-submenu-option.active {
-  background: var(--accent);
-  color: var(--text-on-accent);
-}
 
 .site-settings-row-label {
   flex: 1;

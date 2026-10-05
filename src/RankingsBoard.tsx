@@ -33,6 +33,9 @@ function DivisionCard({ ranking }: { ranking: Ranking }) {
   const [expanded, setExpanded] = useState(false);
   const holders = titleHolders(ranking);
   const accent = colorForGroup(ranking.sport === "boxing" ? "Boxing" : "UFC");
+  // Records only for MMA: boxing's come from a different world (BoxRec) and
+  // ours would be partial and out of step with the ranking beside them.
+  const showRecords = ranking.sport === "mma";
 
   return (
     <section className={"rk-card" + (expanded ? " rk-card-expanded" : "")} style={{ "--rk-accent": accent } as CSSProperties}>
@@ -65,7 +68,10 @@ function DivisionCard({ ranking }: { ranking: Ranking }) {
               ) : (
                 <span className="rk-champion-name rk-vacant">{t("rankings.vacant")}</span>
               )}
-              <div className="rk-champion-label">{t("rankings.champion")}</div>
+              <div className="rk-champion-label">
+                {t("rankings.champion")}
+                {showRecords && holder.fighter?.record && <span className="rk-record">{holder.fighter.record}</span>}
+              </div>
             </div>
           ))
         )}
@@ -81,6 +87,7 @@ function DivisionCard({ ranking }: { ranking: Ranking }) {
           <li key={`${entry.rank}-${entry.name}`} className="rk-row">
             <span className="rk-rank">{entry.rank}</span>
             <RankedFighterName entry={entry} className="rk-name" />
+            {showRecords && entry.record && <span className="rk-record">{entry.record}</span>}
           </li>
         ))}
       </ol>

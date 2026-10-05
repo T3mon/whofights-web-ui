@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { format } from "date-fns";
 import "./RankingsPage.css";
 import { fetchRankings } from "./api";
+import Dropdown from "./Dropdown";
 import { getDateLocale } from "./dateLocale";
 import { RANKING_SOURCES, isRankingList, latestAsOf, sortByWeight, type RankingListKey } from "./rankings";
 import RankingsBoard from "./RankingsBoard";
@@ -54,18 +55,13 @@ export default function RankingsPage() {
     <div className="rankings-page">
       <div className="rankings-toolbar">
         <h2 className="rankings-title">{t("rankings.title")}</h2>
-        <select
-          className="rankings-select"
+        <Dropdown
+          trigger={t(RANKING_SOURCES.find((s) => s.list === list)!.labelKey)}
+          label={t("rankings.sourceLabel")}
           value={list}
-          onChange={(e) => selectList(e.target.value)}
-          aria-label={t("rankings.sourceLabel")}
-        >
-          {RANKING_SOURCES.map((source) => (
-            <option key={source.list} value={source.list}>
-              {t(source.labelKey)}
-            </option>
-          ))}
-        </select>
+          options={RANKING_SOURCES.map((source) => ({ value: source.list, label: t(source.labelKey) }))}
+          onChange={selectList}
+        />
         {asOf && (
           <span className="rankings-as-of">
             {t("rankings.asOf", { date: format(new Date(`${asOf}T00:00:00`), "PP", { locale: getDateLocale(i18n.language) }) })}
