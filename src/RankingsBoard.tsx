@@ -54,7 +54,7 @@ function DivisionCard({ ranking }: { ranking: Ranking }) {
                   ))}
                 </span>
                 {holder.fighter ? (
-                  <RankedFighterName entry={holder.fighter} className="rk-belt-holder" />
+                  <RankedFighterName entry={holder.fighter} sport={ranking.sport} className="rk-belt-holder" />
                 ) : (
                   <span className="rk-vacant">{t("rankings.vacant")}</span>
                 )}
@@ -65,7 +65,7 @@ function DivisionCard({ ranking }: { ranking: Ranking }) {
           holders.map((holder) => (
             <div key={holder.belts.join()}>
               {holder.fighter ? (
-                <RankedFighterName entry={holder.fighter} className="rk-champion-name" />
+                <RankedFighterName entry={holder.fighter} sport={ranking.sport} className="rk-champion-name" />
               ) : (
                 <span className="rk-champion-name rk-vacant">{t("rankings.vacant")}</span>
               )}
@@ -78,7 +78,7 @@ function DivisionCard({ ranking }: { ranking: Ranking }) {
         )}
         {ranking.topRated && (
           <div className="rk-top-rated">
-            {t("rankings.topRated")} &middot; <RankedFighterName entry={ranking.topRated} />
+            {t("rankings.topRated")} &middot; <RankedFighterName entry={ranking.topRated} sport={ranking.sport} />
           </div>
         )}
       </header>
@@ -87,7 +87,7 @@ function DivisionCard({ ranking }: { ranking: Ranking }) {
         {ranking.ranked.map((entry) => (
           <li key={`${entry.rank}-${entry.name}`} className="rk-row">
             <span className="rk-rank">{entry.rank}</span>
-            <RankedFighterName entry={entry} className="rk-name" />
+            <RankedFighterName entry={entry} sport={ranking.sport} className="rk-name" />
             {showRecords && entry.record && <span className="rk-record">{entry.record}</span>}
           </li>
         ))}

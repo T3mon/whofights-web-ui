@@ -49,6 +49,21 @@ export function sortByWeight(rankings: Ranking[]): Ranking[] {
   return [...rankings].sort((a, b) => weightIndex(a.division) - weightIndex(b.division) || a.division.localeCompare(b.division));
 }
 
+// The section on a fighter's Wikipedia page that holds their record table,
+// per sport - every ranked fighter's page checked uses these headings.
+const RECORD_SECTIONS: Record<string, string> = {
+  mma: "Mixed_martial_arts_record",
+  boxing: "Professional_boxing_record",
+};
+
+// A ranked fighter's Wikipedia link, straight to their record for the sport.
+// We store the plain article link; a page without that section just opens
+// at the top.
+export function recordLink(wikiLink: string, sport: string): string {
+  const section = RECORD_SECTIONS[sport];
+  return section && !wikiLink.includes("#") ? `${wikiLink}#${section}` : wikiLink;
+}
+
 // The newest "rankings released" date across the lists on screen; null
 // when none states one (boxing).
 export function latestAsOf(rankings: Ranking[]): string | null {
