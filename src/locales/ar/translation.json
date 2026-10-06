@@ -6,7 +6,9 @@
     "today": "اليوم",
     "year": "سنة",
     "quarter": "ربع سنة",
-    "month": "شهر"
+    "month": "شهر",
+    "rankings": "التصنيفات",
+    "calendar": "التقويم"
   },
   "sidebar": {
     "promotions": "الجهات المنظمة",
@@ -100,5 +102,23 @@
     "error": "رابط التأكيد هذا غير صالح أو منتهي الصلاحية.",
     "invalidLink": "رابط التأكيد هذا ناقص المعلومات.",
     "backToApp": "العودة إلى WhoFights"
+  },
+  "rankings": {
+    "title": "التصنيفات",
+    "sourceLabel": "التصنيف المعروض",
+    "source": {
+      "ufcMedia": "UFC · الإعلام",
+      "ufcMeta": "UFC · Meta",
+      "boxing": "الملاكمة"
+    },
+    "asOf": "حتى {{date}}",
+    "champion": "البطل",
+    "vacant": "شاغر",
+    "topRated": "الأعلى تصنيفًا",
+    "sourceCredit": "المصدر",
+    "loadFailed": "تعذّر تحميل التصنيفات. حاول مرة أخرى لاحقًا.",
+    "empty": "لا توجد تصنيفات بعد.",
+    "showAll": "عرض الكل ({{count}})",
+    "showTop": "عرض أفضل {{count}}"
   }
 }

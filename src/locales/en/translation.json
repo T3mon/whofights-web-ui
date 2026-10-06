@@ -6,7 +6,9 @@
     "today": "Today",
     "year": "Year",
     "quarter": "Quarter",
-    "month": "Month"
+    "month": "Month",
+    "rankings": "Rankings",
+    "calendar": "Calendar"
   },
   "sidebar": {
     "promotions": "Promotions",
@@ -100,5 +102,23 @@
     "error": "This confirmation link is invalid or has expired.",
     "invalidLink": "This confirmation link is missing information.",
     "backToApp": "Back to WhoFights"
+  },
+  "rankings": {
+    "title": "Rankings",
+    "sourceLabel": "Ranking to show",
+    "source": {
+      "ufcMedia": "UFC · Media",
+      "ufcMeta": "UFC · Meta",
+      "boxing": "Boxing"
+    },
+    "asOf": "As of {{date}}",
+    "champion": "Champion",
+    "vacant": "Vacant",
+    "topRated": "Top rated",
+    "sourceCredit": "Source",
+    "loadFailed": "Couldn't load the rankings. Try again later.",
+    "empty": "No rankings yet.",
+    "showAll": "Show all {{count}}",
+    "showTop": "Show top {{count}}"
   }
 }

@@ -16,6 +16,7 @@ import Wordmark from "./Wordmark";
 import AccountOverlay from "./AccountOverlay";
 import SiteSettingsButton from "./SiteSettingsButton";
 import SearchBar from "./SearchBar";
+import RankingsPage from "./RankingsPage";
 import { clearSession, loadSession, type Session } from "./auth";
 import { getVisibleRange, isViewingToday, monthsInView, shiftViewDate, type ViewMode } from "./calendarView";
 import { computeSubSeriesByPromotion, filterKeyForEvent, leafKeysForPromotion } from "./eventSeries";
@@ -24,6 +25,11 @@ import { useKeySet } from "./useKeySet";
 import { getDateLocale } from "./dateLocale";
 import { dayKeyInZone, useTimezone, zonedDate } from "./timezone";
 import type { EventListItem, Promotion } from "./types";
+
+// /rankings shares the calendar's header (account, settings) but none of its
+// controls. One extra page doesn't earn a router - same approach as
+// main.tsx's /confirm-email - and the header button is a plain link.
+const isRankingsPage = window.location.pathname === "/rankings";
 
 function formatViewLabel(mode: ViewMode, viewDate: Date, locale: Locale): string {
   if (mode === "year") return String(viewDate.getFullYear());
@@ -109,21 +115,29 @@ function App() {
     <div className="d-flex flex-column p-3 app-shell" style={{ boxSizing: "border-box" }}>
       <header className="d-flex align-items-center justify-content-between mb-2 flex-shrink-0 flex-wrap gap-2">
         <div className="d-flex align-items-center gap-2">
-          <button
-            type="button"
-            className="btn btn-outline-secondary btn-sm d-md-none"
-            onClick={() => setSidebarOpen(true)}
-            aria-label={t("nav.showFilters")}
-          >
-            &#9776;
-          </button>
+          {!isRankingsPage && (
+            <button
+              type="button"
+              className="btn btn-outline-secondary btn-sm d-md-none"
+              onClick={() => setSidebarOpen(true)}
+              aria-label={t("nav.showFilters")}
+            >
+              &#9776;
+            </button>
+          )}
           <h1 className="h4 mb-0">
-            <Wordmark />
+            <a href="/" className="wordmark-home-link">
+              <Wordmark />
+            </a>
           </h1>
         </div>
         <div className="d-flex align-items-center gap-2 flex-wrap">
-          <SearchBar events={events} onJumpToEvent={jumpToEvent} />
+          {!isRankingsPage && <SearchBar events={events} onJumpToEvent={jumpToEvent} />}
+          <a className="nav-page-link" href={isRankingsPage ? "/" : "/rankings"}>
+            {isRankingsPage ? t("nav.calendar") : t("nav.rankings")}
+          </a>
           <SiteSettingsButton />
+          {!isRankingsPage && (
           <div className="nav-toolbar">
             <div className="nav-stepper">
               <button
@@ -170,6 +184,7 @@ function App() {
               ))}
             </div>
           </div>
+          )}
           {session ? (
             <AccountOverlay
               session={session}
@@ -186,14 +201,20 @@ function App() {
         </div>
       </header>
 
-      {error && (
+      {isRankingsPage && (
+        <main className="flex-grow-1 rankings-main" style={{ minHeight: 0 }}>
+          <RankingsPage />
+        </main>
+      )}
+
+      {!isRankingsPage && error && (
         <div className="alert alert-danger flex-shrink-0" role="alert">
           {t("app.failedToLoadEvents", { message: error })}
         </div>
       )}
-      {loading && <p className="text-muted flex-shrink-0">{t("app.loading")}</p>}
+      {!isRankingsPage && loading && <p className="text-muted flex-shrink-0">{t("app.loading")}</p>}
 
-      {!loading && !error && (
+      {!isRankingsPage && !loading && !error && (
         <div className="d-flex flex-grow-1" style={{ minHeight: 0, gap: "1rem" }}>
           {sidebarOpen && <div className="sidebar-backdrop" onClick={() => setSidebarOpen(false)} />}
           <aside className={"flex-shrink-0 sidebar" + (sidebarOpen ? " sidebar-open" : "")}>

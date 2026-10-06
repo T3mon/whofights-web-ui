@@ -1,0 +1,192 @@
+.rk-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+/* A border, not a shadow: shadows read as "click me", and a card isn't a
+   button. The top rule carries the sport's colour. */
+.rk-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--rk-accent);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.rk-card-head {
+  padding: 14px 16px 14px;
+}
+
+.rk-division {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--rk-accent);
+  margin: 0 0 10px;
+}
+
+.rk-champion-name {
+  display: block;
+  font-size: 21px;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--text-heading);
+  text-decoration: none;
+}
+
+a.rk-champion-name:hover,
+a.rk-name:hover,
+a.rk-belt-holder:hover {
+  text-decoration: underline;
+}
+
+.rk-champion-label {
+  margin-top: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brand-fights);
+}
+
+.rk-belts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rk-belt-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+
+.rk-belt-chips {
+  display: inline-flex;
+  gap: 3px;
+  flex-shrink: 0;
+}
+
+/* Gold: a belt, whichever body it's from. */
+.rk-belt {
+  min-width: 34px;
+  text-align: center;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  padding: 2px 5px;
+  border-radius: 4px;
+  color: var(--bg-page);
+  background: var(--brand-fights);
+}
+
+/* Light theme: the gold is darker there, so white reads better on it than
+   the page colour does (4.8:1 vs 4.3:1). */
+:root[data-bs-theme="light"] .rk-belt {
+  color: var(--text-on-accent);
+}
+
+/* Wraps rather than truncates: an undisputed champion's four chips leave
+   little room, and a cut-off champion name is the one thing not to do. */
+.rk-belt-holder {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--text-heading);
+  text-decoration: none;
+  min-width: 0;
+}
+
+.rk-vacant {
+  font-size: 13px;
+  font-style: italic;
+  color: var(--text-muted);
+}
+
+.rk-top-rated {
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.rk-top-rated a {
+  color: var(--text-bright);
+}
+
+.rk-list {
+  list-style: none;
+  margin: 0;
+  padding: 6px 0 10px;
+  border-top: 1px solid var(--border);
+}
+
+.rk-row {
+  display: grid;
+  grid-template-columns: 26px 1fr auto;
+  gap: 10px;
+  padding: 5px 16px;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.rk-rank {
+  text-align: right;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-secondary);
+}
+
+.rk-name {
+  color: var(--text-bright);
+  text-decoration: none;
+}
+
+/* W-L(-D), muted and aligned so the column of records reads as one. */
+.rk-record {
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--text-secondary);
+}
+
+.rk-champion-label .rk-record {
+  margin-inline-start: 8px;
+}
+
+.rk-more {
+  display: none;
+  width: 100%;
+  background: none;
+  border: none;
+  border-top: 1px solid var(--border);
+  padding: 10px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent-light);
+  cursor: pointer;
+}
+
+/* Phones: each card shows its top contenders until opened, so 11-17
+   divisions don't turn into one endless scroll. */
+@media (max-width: 767.98px) {
+  .rk-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .rk-card:not(.rk-card-expanded) .rk-row:nth-child(n + 6) {
+    display: none;
+  }
+
+  .rk-more {
+    display: block;
+  }
+}

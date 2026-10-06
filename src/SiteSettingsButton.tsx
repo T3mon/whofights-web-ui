@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import "./SiteSettingsButton.css";
+import Dropdown, { type DropdownOption } from "./Dropdown";
 import { LANGUAGES, baseLanguageCode } from "./languages";
 import { applyTheme, getInitialTheme, type Theme } from "./theme";
 import {
@@ -30,35 +31,30 @@ function timezoneLabel(id: string): string {
 export default function SiteSettingsButton() {
   const { t, i18n } = useTranslation();
   const [open, setOpen] = useState(false);
-  const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
-  const [locationMenuOpen, setLocationMenuOpen] = useState(false);
-  const [timezoneQuery, setTimezoneQuery] = useState("");
+  // Only one of the panel's menus is open at a time.
+  const [menu, setMenu] = useState<"language" | "location" | null>(null);
   const [theme, setTheme] = useState<Theme>(() => getInitialTheme());
 
   const timezoneSetting = useTimezoneSetting();
   const effectiveTimezone = useTimezone();
   const deviceTimezone = getDeviceTimezone();
 
-  const filteredTimezones = useMemo(() => {
-    const zones = getSupportedTimezones();
-    const query = timezoneQuery.trim().toLowerCase().replace(/\s+/g, "_");
-    if (!query) return zones;
-    return zones.filter((zone) => zone.toLowerCase().includes(query));
-  }, [timezoneQuery]);
+  const timezoneOptions = useMemo<DropdownOption[]>(
+    () => [
+      { value: AUTO_TIMEZONE, label: t("settings.locationAuto", { zone: timezoneLabel(deviceTimezone) }), pinned: true },
+      ...getSupportedTimezones().map((zone) => ({ value: zone, label: timezoneLabel(zone) })),
+    ],
+    [t, deviceTimezone],
+  );
 
   function changeTheme(next: Theme) {
     setTheme(next);
     applyTheme(next);
   }
 
-  function closeLocationMenu() {
-    setLocationMenuOpen(false);
-    setTimezoneQuery("");
-  }
-
-  function changeTimezone(next: string) {
-    setTimezone(next);
-    closeLocationMenu();
+  function closePanel() {
+    setOpen(false);
+    setMenu(null);
   }
 
   const currentLanguage = baseLanguageCode(i18n.language);
@@ -71,132 +67,65 @@ export default function SiteSettingsButton() {
         className="site-settings-trigger"
         onClick={() => {
           setOpen((o) => !o);
-          setLanguageMenuOpen(false);
-          closeLocationMenu();
+          setMenu(null);
         }}
         aria-label={t("settings.ariaLabel")}
       >
         <GearIcon />
         <span className="site-settings-trigger-lang">{currentLanguage.toUpperCase()}</span>
-        <span className={"site-settings-chevron" + (open ? " open" : "")}>&#9662;</span>
+        <span className={"dropdown-chevron" + (open ? " open" : "")}>&#9662;</span>
       </button>
 
       {open && (
         <>
-          <div
-            className="site-settings-backdrop"
-            onClick={() => {
-              setOpen(false);
-              setLanguageMenuOpen(false);
-              closeLocationMenu();
-            }}
-          />
+          <div className="site-settings-backdrop" onClick={closePanel} />
           <div className="site-settings-dropdown" role="menu" aria-label={t("settings.ariaLabel")}>
             <div className="site-settings-row">
-              <button
-                type="button"
-                className="site-settings-row-header"
-                onClick={() => {
-                  setLanguageMenuOpen((o) => !o);
-                  closeLocationMenu();
-                }}
-              >
-                <LanguageIcon />
-                <span className="site-settings-row-label">
-                  {t("settings.language")}: <strong>{currentLanguageName}</strong>
-                </span>
-                <span className={"site-settings-chevron" + (languageMenuOpen ? " open" : "")}>&#9662;</span>
-              </button>
-              {languageMenuOpen && (
-                <>
-                  <div className="site-settings-submenu-backdrop" onClick={() => setLanguageMenuOpen(false)} />
-                  <ul className="site-settings-submenu site-settings-submenu-list" role="listbox" aria-label={t("settings.language")}>
-                    {LANGUAGES.map((lang) => (
-                      <li key={lang.code}>
-                        <button
-                          type="button"
-                          className={"site-settings-submenu-option" + (lang.code === currentLanguage ? " active" : "")}
-                          role="option"
-                          aria-selected={lang.code === currentLanguage}
-                          onClick={() => {
-                            i18n.changeLanguage(lang.code);
-                            setLanguageMenuOpen(false);
-                          }}
-                        >
-                          {lang.nativeName}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </>
-              )}
+              <Dropdown
+                className="site-settings-menu"
+                triggerClassName="site-settings-row-header"
+                trigger={
+                  <>
+                    <LanguageIcon />
+                    <span className="site-settings-row-label">
+                      {t("settings.language")}: <strong>{currentLanguageName}</strong>
+                    </span>
+                  </>
+                }
+                label={t("settings.language")}
+                value={currentLanguage}
+                options={LANGUAGES.map((lang) => ({ value: lang.code, label: lang.nativeName }))}
+                onChange={(code) => i18n.changeLanguage(code)}
+                open={menu === "language"}
+                onOpenChange={(isOpen) => setMenu(isOpen ? "language" : null)}
+              />
             </div>
 
             <div className="site-settings-row">
-              <button
-                type="button"
-                className="site-settings-row-header"
-                onClick={() => {
-                  setLanguageMenuOpen(false);
-                  if (locationMenuOpen) closeLocationMenu();
-                  else setLocationMenuOpen(true);
+              <Dropdown
+                className="site-settings-menu"
+                triggerClassName="site-settings-row-header"
+                trigger={
+                  <>
+                    <LocationIcon />
+                    <span className="site-settings-row-label">
+                      {t("settings.location")}: <strong>{timezoneLabel(effectiveTimezone)}</strong>
+                    </span>
+                  </>
+                }
+                label={t("settings.location")}
+                value={timezoneSetting}
+                options={timezoneOptions}
+                onChange={setTimezone}
+                open={menu === "location"}
+                onOpenChange={(isOpen) => setMenu(isOpen ? "location" : null)}
+                search={{
+                  placeholder: t("settings.locationSearchPlaceholder"),
+                  noResults: t("settings.locationNoResults"),
+                  // IANA ids are underscored; let "new york" find America/New_York.
+                  matches: (option, query) => option.value.toLowerCase().includes(query.toLowerCase().replace(/\s+/g, "_")),
                 }}
-              >
-                <LocationIcon />
-                <span className="site-settings-row-label">
-                  {t("settings.location")}: <strong>{timezoneLabel(effectiveTimezone)}</strong>
-                </span>
-                <span className={"site-settings-chevron" + (locationMenuOpen ? " open" : "")}>&#9662;</span>
-              </button>
-              {locationMenuOpen && (
-                <>
-                  <div className="site-settings-submenu-backdrop" onClick={closeLocationMenu} />
-                  <div className="site-settings-submenu">
-                    <input
-                      type="text"
-                      className="site-settings-submenu-search"
-                      placeholder={t("settings.locationSearchPlaceholder")}
-                      value={timezoneQuery}
-                      onChange={(e) => setTimezoneQuery(e.target.value)}
-                      autoFocus
-                      onKeyDown={(e) => {
-                        if (e.key === "Escape") closeLocationMenu();
-                      }}
-                    />
-                    <ul className="site-settings-submenu-list" role="listbox" aria-label={t("settings.location")}>
-                      <li>
-                        <button
-                          type="button"
-                          className={
-                            "site-settings-submenu-option" + (timezoneSetting === AUTO_TIMEZONE ? " active" : "")
-                          }
-                          role="option"
-                          aria-selected={timezoneSetting === AUTO_TIMEZONE}
-                          onClick={() => changeTimezone(AUTO_TIMEZONE)}
-                        >
-                          {t("settings.locationAuto", { zone: timezoneLabel(deviceTimezone) })}
-                        </button>
-                      </li>
-                      {filteredTimezones.map((zone) => (
-                        <li key={zone}>
-                          <button
-                            type="button"
-                            className={"site-settings-submenu-option" + (timezoneSetting === zone ? " active" : "")}
-                            role="option"
-                            aria-selected={timezoneSetting === zone}
-                            onClick={() => changeTimezone(zone)}
-                          >
-                            {timezoneLabel(zone)}
-                          </button>
-                        </li>
-                      ))}
-                      {filteredTimezones.length === 0 && (
-                        <li className="site-settings-submenu-empty">{t("settings.locationNoResults")}</li>
-                      )}
-                    </ul>
-                  </div>
-                </>
-              )}
+              />
             </div>
 
             <div className="site-settings-row">
