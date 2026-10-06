@@ -119,6 +119,11 @@
     "loadFailed": "Impossible de charger les classements. Réessayez plus tard.",
     "empty": "Aucun classement pour le moment.",
     "showAll": "Afficher les {{count}}",
-    "showTop": "Afficher le top {{count}}"
+    "showTop": "Afficher le top {{count}}",
+    "badge": {
+      "champion": "Champion {{division}} · {{belts}}",
+      "ranked": "Nº {{rank}} {{division}} · classement {{source}}",
+      "rank": "#{{rank}}"
+    }
   }
 }

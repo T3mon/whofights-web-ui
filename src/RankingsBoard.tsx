@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { CSSProperties } from "react";
 import "./RankingsBoard.css";
+import BeltChip from "./BeltChip";
 import { colorForGroup } from "./promotionColors";
 import RankedFighterName from "./RankedFighterName";
 import { titleHolders } from "./rankings";
@@ -47,9 +48,9 @@ function DivisionCard({ ranking }: { ranking: Ranking }) {
               <li key={holder.belts.join()} className="rk-belt-row">
                 <span className="rk-belt-chips">
                   {holder.belts.map((belt) => (
-                    <span key={belt} className="rk-belt">
+                    <BeltChip key={belt} className="rk-belt">
                       {belt}
-                    </span>
+                    </BeltChip>
                   ))}
                 </span>
                 {holder.fighter ? (
