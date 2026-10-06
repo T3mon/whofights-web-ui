@@ -119,6 +119,11 @@
     "loadFailed": "Не вдалося завантажити рейтинги. Спробуйте пізніше.",
     "empty": "Рейтингів поки немає.",
     "showAll": "Показати всі {{count}}",
-    "showTop": "Показати топ-{{count}}"
+    "showTop": "Показати топ-{{count}}",
+    "badge": {
+      "champion": "Чемпіон, {{division}} · {{belts}}",
+      "ranked": "№{{rank}}, {{division}} · рейтинг {{source}}",
+      "rank": "№{{rank}}"
+    }
   }
 }

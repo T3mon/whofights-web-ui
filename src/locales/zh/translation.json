@@ -119,6 +119,11 @@
     "loadFailed": "无法加载排名，请稍后再试。",
     "empty": "暂无排名。",
     "showAll": "显示全部 {{count}} 名",
-    "showTop": "只显示前 {{count}} 名"
+    "showTop": "只显示前 {{count}} 名",
+    "badge": {
+      "champion": "{{division}} 冠军 · {{belts}}",
+      "ranked": "{{division}} 第 {{rank}} 名 · {{source}} 排名",
+      "rank": "#{{rank}}"
+    }
   }
 }

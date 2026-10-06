@@ -1,0 +1,6 @@
+.fighter-link {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  min-width: 0;
+}

@@ -119,6 +119,11 @@
     "loadFailed": "تعذّر تحميل التصنيفات. حاول مرة أخرى لاحقًا.",
     "empty": "لا توجد تصنيفات بعد.",
     "showAll": "عرض الكل ({{count}})",
-    "showTop": "عرض أفضل {{count}}"
+    "showTop": "عرض أفضل {{count}}",
+    "badge": {
+      "champion": "بطل {{division}} · {{belts}}",
+      "ranked": "رقم {{rank}} في {{division}} · تصنيف {{source}}",
+      "rank": "#{{rank}}"
+    }
   }
 }

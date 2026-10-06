@@ -1,0 +1,16 @@
+.rank-badge-visual {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.rank-badge-rank {
+  font-size: 0.85em;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-secondary);
+}
+
+.rank-badge-crown svg {
+  display: block;
+  margin: 1px 0;
+}

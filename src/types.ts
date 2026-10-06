@@ -46,12 +46,29 @@ export interface Ranking {
   topRated: RankingEntry | null;
 }
 
+// A fighter's standing, shown next to their name on cards: a title, or a
+// contender rank. Official UFC rankings for MMA; BoxRec ranks and the four
+// sanctioning bodies' belts for boxing.
+export interface RankingBadge {
+  // "ufc" or "boxrec".
+  list: string;
+  division: string;
+  // Contenders only.
+  rank: number | null;
+  // Champions only: every belt they hold in that division - "UFC", or
+  // "WBA", "WBC", "IBF", "WBO".
+  belts: string[];
+}
+
 export interface Bout {
   fighterA: string;
   fighterALink: string;
   fighterB: string;
   fighterBLink: string;
   weightClass: string | null;
+  // Null when the fighter holds no title or ranking.
+  fighterARanking: RankingBadge | null;
+  fighterBRanking: RankingBadge | null;
 }
 
 export interface EventListItem {

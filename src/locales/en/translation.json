@@ -119,6 +119,11 @@
     "loadFailed": "Couldn't load the rankings. Try again later.",
     "empty": "No rankings yet.",
     "showAll": "Show all {{count}}",
-    "showTop": "Show top {{count}}"
+    "showTop": "Show top {{count}}",
+    "badge": {
+      "champion": "{{division}} champion · {{belts}}",
+      "ranked": "#{{rank}} {{division}} · {{source}} rankings",
+      "rank": "#{{rank}}"
+    }
   }
 }
