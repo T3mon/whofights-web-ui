@@ -22,8 +22,8 @@ export interface RankingEntry {
   rank: number | null;
   // Champions only: "UFC", or a boxing body ("WBA", "WBC", "IBF", "WBO").
   belt: string | null;
-  // "20-5" or "25-7-1", from our own fighter data when the name is linked
-  // to a fighter on our cards - as of their latest card there.
+  // Always "W-L" or "W-L-D". Tapology's while the fighter has a card still
+  // ahead, otherwise the ranking source's (it already has the latest result).
   record: string | null;
   wikiLink: string | null;
   // Tapology link of the matching fighter on our cards, when the name
