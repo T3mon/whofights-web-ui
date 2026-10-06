@@ -14,26 +14,26 @@ export function isRankingList(value: string | null): value is RankingListKey {
   return RANKING_SOURCES.some((s) => s.list === value);
 }
 
-// Lightest to heaviest - the order ufc.com and boxing's own tables use -
-// with women's divisions after the men's. Names as the sources write them.
+// Heaviest to lightest, with women's divisions after the men's (in the
+// same order). Names as the sources write them.
 const WEIGHT_ORDER = [
-  "strawweight",
-  "light flyweight",
-  "flyweight",
-  "super flyweight",
-  "bantamweight",
-  "super bantamweight",
-  "featherweight",
-  "super featherweight",
-  "lightweight",
-  "super lightweight",
-  "welterweight",
-  "super welterweight",
-  "middleweight",
-  "super middleweight",
-  "light heavyweight",
-  "cruiserweight",
   "heavyweight",
+  "cruiserweight",
+  "light heavyweight",
+  "super middleweight",
+  "middleweight",
+  "super welterweight",
+  "welterweight",
+  "super lightweight",
+  "lightweight",
+  "super featherweight",
+  "featherweight",
+  "super bantamweight",
+  "bantamweight",
+  "super flyweight",
+  "flyweight",
+  "light flyweight",
+  "strawweight",
 ];
 const WOMENS_PREFIX = "women's ";
 
