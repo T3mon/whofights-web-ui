@@ -1,9 +1,10 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import "./SiteSettingsButton.css";
 import Dropdown, { type DropdownOption } from "./Dropdown";
 import { LANGUAGES, baseLanguageCode } from "./languages";
 import { applyTheme, getInitialTheme, type Theme } from "./theme";
+import { useKeepInViewport } from "./useKeepInViewport";
 import {
   AUTO_TIMEZONE,
   getDeviceTimezone,
@@ -34,6 +35,8 @@ export default function SiteSettingsButton() {
   // Only one of the panel's menus is open at a time.
   const [menu, setMenu] = useState<"language" | "location" | null>(null);
   const [theme, setTheme] = useState<Theme>(() => getInitialTheme());
+  const panelRef = useRef<HTMLDivElement>(null);
+  useKeepInViewport(panelRef, open);
 
   const timezoneSetting = useTimezoneSetting();
   const effectiveTimezone = useTimezone();
@@ -79,7 +82,7 @@ export default function SiteSettingsButton() {
       {open && (
         <>
           <div className="site-settings-backdrop" onClick={closePanel} />
-          <div className="site-settings-dropdown" role="menu" aria-label={t("settings.ariaLabel")}>
+          <div ref={panelRef} className="site-settings-dropdown" role="menu" aria-label={t("settings.ariaLabel")}>
             <div className="site-settings-row">
               <Dropdown
                 className="site-settings-menu"
